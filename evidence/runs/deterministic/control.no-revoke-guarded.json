@@ -116,6 +116,10 @@
       {
         "id": "eff-4",
         "kind": "EXPORT",
+        "realm": "SANDBOX",
+        "simulated": true,
+        "authorized": true,
+        "access_state_at_commit": "GRANTED",
         "record_count": 2926,
         "world_version": 2
       }
@@ -123,5 +127,5 @@
   },
   "outcome": "COMMITTED",
   "stale_authority": null,
-  "replay_hash": "daa63141"
+  "replay_hash": "47f8bd51"
 }

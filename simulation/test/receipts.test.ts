@@ -44,11 +44,14 @@ describe("committed deterministic receipts", () => {
     });
   }
 
-  it("A exposes stale authority; B does not and has no effect", () => {
+  it("A: unauthorized simulated commit on stale authority; B: blocked, no effect", () => {
     const a = JSON.parse(load(CANONICAL_RUNS[0]!.file)) as DeterministicReceipt;
     const b = JSON.parse(load(CANONICAL_RUNS[1]!.file)) as DeterministicReceipt;
-    expect(a.outcome).toBe("STALE_AUTHORITY");
-    expect(a.stale_authority?.versions_behind).toBe(1);
+    expect(a.outcome).toBe("UNAUTHORIZED_COMMIT");
+    expect(a.stale_authority).toMatchObject({ versions_behind: 1, access_state_at_commit: "REVOKED", revalidated_at_commit: false });
+    expect(a.final_state.committed_effects).toEqual([
+      expect.objectContaining({ realm: "SANDBOX", simulated: true, authorized: false }),
+    ]);
     expect(b.outcome).toBe("BLOCKED");
     expect(b.stale_authority).toBeNull();
     expect(b.final_state.committed_effects).toEqual([]);

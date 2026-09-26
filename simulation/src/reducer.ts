@@ -2,8 +2,8 @@
  * Event reducer. The ONLY way world state changes.
  *
  * Mutation rule (canon: "Every world mutation increments worldVersion"):
- *   A *world mutation* is a change to external world facts — access/authorization
- *   state or a committed irreversible effect. Those events bump worldVersion.
+ *   A *world mutation* is a change to world facts — access/authorization state or a
+ *   committed (sandbox-simulated) irreversible effect. Those events bump worldVersion.
  *   Agent-side bookkeeping (observations, a prepared-but-uncommitted action,
  *   rejected/blocked attempts) does not change the external world and does not bump it.
  *   Every event, mutating or not, is appended to eventLog with before/after versions,
@@ -139,23 +139,26 @@ export function applyEvent(prev: WorldState, input: WorldEventInput): WorldState
       let effectId: string | null = null;
 
       if (p.status === "INELIGIBLE") {
-        // Commit-time verification already saw REVOKED: the action never reaches the effect.
+        // GUARDED: commit-time verification already saw REVOKED. The effect is never reached.
         result = "BLOCKED";
         reason = "ACCESS_REVOKED_AT_VERIFY";
-      } else if (witnessStale) {
-        // Sandbox commit gate: the authority witness is older than current authorization.
-        // The sandbox rejects; no irreversible effect occurs.
-        result = "STALE_AUTHORITY";
-        reason = "AUTHORIZATION_VERSION_ADVANCED";
       } else {
-        result = "COMMITTED";
-        reason = "WITNESS_CURRENT";
+        // No revalidation happened at commit time. This sandbox models a system that trusts
+        // the witness it is handed: the (simulated) effect commits either way. Whether that
+        // commit was authorized is recorded as evidence, not used as a hidden gate.
+        const authorized = !witnessStale && s.accessState === "GRANTED";
+        result = authorized ? "COMMITTED" : "UNAUTHORIZED_COMMIT";
+        reason = witnessStale ? "STALE_AUTHORITY" : "WITNESS_CURRENT";
         s.worldVersion += 1;
         mutation = true;
         effectId = `eff-${seq}`;
         s.committedEffects.push({
           id: effectId,
           kind: "EXPORT",
+          realm: "SANDBOX",
+          simulated: true,
+          authorized,
+          accessStateAtCommit: s.accessState,
           recordCount: p.recordCount,
           seq,
           worldVersion: s.worldVersion,

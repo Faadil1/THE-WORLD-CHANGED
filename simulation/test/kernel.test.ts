@@ -38,23 +38,29 @@ describe("Scenario A — stale authority WITHOUT commit-time revalidation", () =
     expect(final.accessState).toBe("REVOKED");
   });
 
-  it("6-7: commit uses witness N and produces explicit STALE_AUTHORITY evidence", () => {
+  it("6-7: commit uses witness N; no revalidation; receipt records stale witness + REVOKED authority", () => {
     expect(final.actionAttempts).toHaveLength(1);
     const a = final.actionAttempts[0]!;
     expect(a.policy).toBe("UNGUARDED");
     expect(a.witnessWorldVersion).toBe(N);
     expect(a.currentWorldVersion).toBe(N + 1);
+    expect(a.currentAccessState).toBe("REVOKED");
     expect(a.witnessStale).toBe(true);
-    expect(a.result).toBe("STALE_AUTHORITY");
-    expect(receipt.outcome).toBe("STALE_AUTHORITY");
+    expect(a.reason).toBe("STALE_AUTHORITY");
+    expect(a.result).toBe("UNAUTHORIZED_COMMIT");
+    expect(receipt.outcome).toBe("UNAUTHORIZED_COMMIT");
     expect(receipt.stale_authority).toEqual({
       attempt_id: a.id,
       witness_world_version: N,
       world_version_at_commit: N + 1,
       witness_authorization_version: 1,
       authorization_version_at_commit: 2,
+      witnessed_access_state: "GRANTED",
+      access_state_at_commit: "REVOKED",
       versions_behind: 1,
+      revalidated_at_commit: false,
       mutations_between: [{ seq: 3, type: "ADMIN_REVOKES_ACCESS" }],
+      effect_id: "eff-4",
     });
   });
 
@@ -64,10 +70,32 @@ describe("Scenario A — stale authority WITHOUT commit-time revalidation", () =
     expect(isMisregistered(final)).toBe(true);
   });
 
-  it("sandbox rejected the stale commit: no irreversible effect, world version unchanged", () => {
-    expect(final.committedEffects).toEqual([]);
-    expect(final.worldVersion).toBe(N + 1);
-    expect(final.actionAttempts[0]!.effectId).toBeNull();
+  it("the unguarded system commits a SANDBOX/SIMULATED, unauthorized export effect", () => {
+    expect(final.committedEffects).toHaveLength(1);
+    const e = final.committedEffects[0]!;
+    expect(e).toMatchObject({
+      id: "eff-4",
+      kind: "EXPORT",
+      realm: "SANDBOX",
+      simulated: true,
+      authorized: false,
+      accessStateAtCommit: "REVOKED",
+    });
+    expect(receipt.final_state.committed_effects[0]).toMatchObject({
+      realm: "SANDBOX",
+      simulated: true,
+      authorized: false,
+      access_state_at_commit: "REVOKED",
+    });
+  });
+
+  it("the simulated effect is a world mutation: N+1 -> N+2", () => {
+    const commit = final.eventLog.at(-1)!;
+    expect(commit.type).toBe("COMMIT_EXPORT");
+    expect(commit.mutation).toBe(true);
+    expect(commit.worldVersionBefore).toBe(N + 1);
+    expect(commit.worldVersionAfter).toBe(N + 2);
+    expect(final.worldVersion).toBe(N + 2);
   });
 
   it("event log proves mutation ordering: observe < prepare < revoke < commit", () => {
@@ -129,9 +157,18 @@ describe("Scenario B — commit-time revalidation BLOCKS the action", () => {
     expect(receipt.stale_authority).toBeNull();
   });
 
-  it("no committed irreversible effect", () => {
+  it("no committed irreversible effect; world version stays at N+1", () => {
     expect(final.committedEffects).toEqual([]);
     expect(receipt.final_state.committed_effects).toEqual([]);
+    expect(final.worldVersion).toBe(N + 1);
+    expect(final.eventLog.at(-1)!.mutation).toBe(false);
+  });
+
+  it("same world, only the policy differs: A commits unauthorized, B blocks", () => {
+    expect(unguarded.receipt.outcome).toBe("UNAUTHORIZED_COMMIT");
+    expect(receipt.outcome).toBe("BLOCKED");
+    expect(unguarded.final.committedEffects).toHaveLength(1);
+    expect(final.committedEffects).toHaveLength(0);
   });
 
   it("BELIEF re-registers with REALITY after the refresh", () => {
@@ -149,6 +186,8 @@ describe("Controls — outcomes come from world state, not from a script", () =>
     const { final, receipt } = runScenario({ seed: SEED, policy: "UNGUARDED", revoke: false });
     expect(receipt.outcome).toBe("COMMITTED");
     expect(final.committedEffects).toHaveLength(1);
+    expect(final.committedEffects[0]).toMatchObject({ authorized: true, realm: "SANDBOX", simulated: true });
+    expect(final.actionAttempts[0]!.witnessStale).toBe(false);
     const commit = final.eventLog.at(-1)!;
     expect(commit.mutation).toBe(true);
     expect(commit.worldVersionAfter).toBe(N + 1);
@@ -160,6 +199,7 @@ describe("Controls — outcomes come from world state, not from a script", () =>
     expect(receipt.outcome).toBe("COMMITTED");
     expect(final.observations[1]!.witnessedWorldVersion).toBe(N);
     expect(final.committedEffects).toHaveLength(1);
+    expect(final.committedEffects[0]!.authorized).toBe(true);
   });
 
   it("every mutation increments worldVersion by exactly one; non-mutations never do", () => {

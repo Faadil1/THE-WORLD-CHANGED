@@ -13,7 +13,13 @@ export type Actor = "AGENT" | "WORLD";
 /** Agent commit policy. GUARDED re-verifies current state at commit time. */
 export type CommitPolicy = "UNGUARDED" | "GUARDED";
 
-export type ActionResult = "COMMITTED" | "STALE_AUTHORITY" | "BLOCKED";
+/**
+ * COMMITTED           — authorized commit (witness current, access GRANTED).
+ * UNAUTHORIZED_COMMIT — UNGUARDED system committed on a stale witness while access was REVOKED.
+ *                       The effect is SANDBOX/SIMULATED only; nothing leaves the sandbox.
+ * BLOCKED             — commit-time revalidation saw REVOKED; no effect.
+ */
+export type ActionResult = "COMMITTED" | "UNAUTHORIZED_COMMIT" | "BLOCKED";
 
 /**
  * Inputs to the reducer. These are the only things a receipt needs to replay a run
@@ -66,6 +72,13 @@ export type PendingAction = {
 export type Effect = {
   id: string;
   kind: "EXPORT";
+  /** Every effect in kernel-v0 is simulated inside the deterministic sandbox. */
+  realm: "SANDBOX";
+  simulated: true;
+  /** false when committed without current authority (UNAUTHORIZED_COMMIT). */
+  authorized: boolean;
+  /** Access state in the world at the moment of commit. */
+  accessStateAtCommit: AccessState;
   recordCount: number;
   seq: number;
   /** World version produced by committing this effect. */
@@ -90,7 +103,12 @@ export type ActionAttempt = {
   /** Logical ticks between the witness observation and this commit attempt. */
   intervalTicks: number;
   result: ActionResult;
-  reason: "WITNESS_CURRENT" | "AUTHORIZATION_VERSION_ADVANCED" | "ACCESS_REVOKED_AT_VERIFY";
+  /**
+   * WITNESS_CURRENT          — witness matches current authority.
+   * STALE_AUTHORITY          — witness authorization version is behind current; no revalidation performed.
+   * ACCESS_REVOKED_AT_VERIFY — commit-time verification observed REVOKED.
+   */
+  reason: "WITNESS_CURRENT" | "STALE_AUTHORITY" | "ACCESS_REVOKED_AT_VERIFY";
   /** Id of the committed effect, or null when no irreversible effect occurred. */
   effectId: string | null;
 };

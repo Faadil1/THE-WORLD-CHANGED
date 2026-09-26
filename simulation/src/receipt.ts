@@ -62,7 +62,16 @@ export type ReceiptWorldSnapshot = {
     witness_world_version: number;
     witness_authorization_version: number;
   };
-  committed_effects: Array<{ id: string; kind: "EXPORT"; record_count: number; world_version: number }>;
+  committed_effects: Array<{
+    id: string;
+    kind: "EXPORT";
+    realm: "SANDBOX";
+    simulated: true;
+    authorized: boolean;
+    access_state_at_commit: WorldState["accessState"];
+    record_count: number;
+    world_version: number;
+  }>;
 };
 
 export type DeterministicReceipt = {
@@ -86,8 +95,13 @@ export type DeterministicReceipt = {
     world_version_at_commit: number;
     witness_authorization_version: number;
     authorization_version_at_commit: number;
+    witnessed_access_state: WorldState["accessState"];
+    access_state_at_commit: WorldState["accessState"];
     versions_behind: number;
+    revalidated_at_commit: boolean;
     mutations_between: Array<{ seq: number; type: string }>;
+    /** Effect committed on the stale witness (SANDBOX/SIMULATED), or null if none. */
+    effect_id: string | null;
   };
   /** Hash of the replay-relevant content; replay must reproduce it exactly. */
   replay_hash: string;
@@ -117,6 +131,10 @@ export function snapshot(s: WorldState): ReceiptWorldSnapshot {
     committed_effects: s.committedEffects.map((e) => ({
       id: e.id,
       kind: e.kind,
+      realm: e.realm,
+      simulated: e.simulated,
+      authorized: e.authorized,
+      access_state_at_commit: e.accessStateAtCommit,
       record_count: e.recordCount,
       world_version: e.worldVersion,
     })),
@@ -164,6 +182,12 @@ export function buildReceipt(initial: WorldState, final: WorldState, policy: Com
   }));
 
   const staleAttempt = final.actionAttempts.find((a) => a.witnessStale);
+  const staleWitness = staleAttempt
+    ? final.observations.find(
+        (o) =>
+          o.witnessedWorldVersion === staleAttempt.witnessWorldVersion && o.seq < staleAttempt.seq,
+      )
+    : undefined;
   const stale_authority = staleAttempt
     ? {
         attempt_id: staleAttempt.id,
@@ -171,6 +195,8 @@ export function buildReceipt(initial: WorldState, final: WorldState, policy: Com
         world_version_at_commit: staleAttempt.currentWorldVersion,
         witness_authorization_version: staleAttempt.witnessAuthorizationVersion,
         authorization_version_at_commit: staleAttempt.currentAuthorizationVersion,
+        witnessed_access_state: staleWitness?.accessState ?? "GRANTED",
+        access_state_at_commit: staleAttempt.currentAccessState,
         versions_behind: staleAttempt.currentWorldVersion - staleAttempt.witnessWorldVersion,
         mutations_between: final.eventLog
           .filter(
@@ -180,6 +206,8 @@ export function buildReceipt(initial: WorldState, final: WorldState, policy: Com
               e.seq < staleAttempt.seq,
           )
           .map((e) => ({ seq: e.seq, type: e.type })),
+        revalidated_at_commit: false,
+        effect_id: staleAttempt.effectId,
       }
     : null;
 

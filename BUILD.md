@@ -6,7 +6,7 @@ Branch: `build/kernel-v0` · Phase: TECHNICAL REALITY CHECK
 
 ```bash
 npm install
-npm test               # 54 kernel / receipt / controller / boundary tests
+npm test               # 56 kernel / receipt / controller / boundary tests
 npm run typecheck
 npm run receipts       # regenerate evidence/runs/deterministic/*.json (tests fail if they drift)
 npm run dev            # PULL THE GAP hero at http://localhost:5173
@@ -33,20 +33,28 @@ tools/visual_check.py  gesture-driven visual verification
 
 ## Kernel semantics (decisions made inside canon)
 
-- **World mutation** = change to external world facts: `ADMIN_REVOKES_ACCESS` and a committed
+- **World mutation** = change to sandbox world facts: `ADMIN_REVOKES_ACCESS` and a committed
   `EXPORT` effect. Each bumps `worldVersion` by exactly 1. Observations, prepared actions,
-  verifications and rejected/blocked attempts are agent-side and never bump it.
+  verifications and blocked attempts are agent-side and never bump it.
   Every event (mutating or not) is logged with `worldVersionBefore/After`.
 - **Initial version N = 1.** Revocation moves the world to 2.
 - **Authority witness** = the observation a commit relies on. `commit_export(witness_version)`
   resolves the observation at that world version; the witness is stale when its
   `authorizationVersion` ≠ current `authorizationVersion`.
-- **Scenario A (unguarded):** commit carries witness v1 into world v2 → sandbox commit gate
-  rejects → `STALE_AUTHORITY`, `witness_stale: true`, **no effect committed**.
-- **Scenario B (guarded):** `verify_access()` at commit time records a new observation
-  (v2, REVOKED), pending action → `INELIGIBLE`, commit → `BLOCKED`, no effect.
-- **Controls:** with no revocation both policies → `COMMITTED` (effect recorded, world → v2).
-  Outcomes are computed from state, never scripted.
+- **Scenario A (UNGUARDED):** models a system with *no* commit-time revalidation. The commit
+  carries witness v1 into world v2 (REVOKED) and a **simulated** export effect commits
+  (`realm: SANDBOX`, `simulated: true`, `authorized: false`) → outcome `UNAUTHORIZED_COMMIT`,
+  `reason: STALE_AUTHORITY`, world → v3. The receipt's `stale_authority` block records the
+  stale witness, `access_state_at_commit: REVOKED`, `revalidated_at_commit: false` and the effect id.
+  There is no hidden sandbox gate.
+- **Scenario B (GUARDED):** `verify_access()` at commit time records a new observation
+  (v2, REVOKED), pending action → `INELIGIBLE`, commit → `BLOCKED`, no effect, world stays v2.
+- **Controls:** with no revocation both policies → `COMMITTED` with an authorized
+  (still sandbox-simulated) effect. Outcomes are computed from state, never scripted.
+- **Visual law:** gap width = elapsed vulnerability interval only. Plates misregister only when a
+  world mutation makes BELIEF ≠ REALITY (asserted geometrically in `tools/visual_check.py`).
+- **Release** = pulling the pin latch at ACT (drag down past threshold, tap, or Enter/Space).
+  Technical evidence (ledger, receipt JSON) lives behind the collapsed PROOF drawer.
 - **Ticks** are a logical clock. Gap width → `gapTicks` (commit at `t = 1 + gapTicks`);
   drop position → revocation tick strictly inside the gap. Both are recorded and replayed.
 - **Seed** derives the export `record_count`. Same seed + same ordered events = byte-identical receipt.

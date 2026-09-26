@@ -62,11 +62,20 @@
           <div class="interval__event" id="placed"><span>ADMIN REVOKES ACCESS</span></div>
           <div class="interval__playhead" id="playhead"></div>
         </div>
-        <button class="node node--act" id="act" aria-label="Act handle — drag to pull the gap open">
-          <span class="node__dot"></span>
-          <span class="node__label">ACT</span>
-          <span class="node__tick" id="act-tick">t3</span>
-        </button>
+        <div class="actwrap">
+          <button class="node node--act" id="act" aria-label="Act handle — drag to pull the gap open">
+            <span class="node__dot"></span>
+            <span class="node__label">ACT</span>
+            <span class="node__tick" id="act-tick">t3</span>
+          </button>
+          <span class="pawl" aria-hidden="true"></span>
+          <button class="latch" id="latch" aria-label="Release the gap: pull the pin">
+            <span class="latch__stem" aria-hidden="true"></span>
+            <span class="latch__ring" aria-hidden="true"></span>
+            <span class="latch__label" aria-hidden="true">PULL PIN</span>
+          </button>
+          <span class="effect" id="effect" aria-hidden="true"><b>EXPORT</b><i>SIMULATED</i></span>
+        </div>
       </section>
 
       <section class="controls">
@@ -81,20 +90,22 @@
           <span class="switch__state" id="guard-state">OFF</span>
         </button>
 
-        <button class="release" id="release">RELEASE</button>
       </section>
 
       <section class="verdict" id="verdict" aria-live="assertive">
         <div class="verdict__stamp" id="stamp"></div>
-        <p class="verdict__why" id="why"></p>
+        <p class="verdict__why"><span id="why"></span> <span class="sim" id="sim">SIMULATED · SANDBOX</span></p>
         <div class="verdict__actions">
           <button class="link" id="replay-other"></button>
           <button class="link" id="reset">RESET</button>
-          <a class="link" id="receipt" download>RECEIPT.JSON</a>
         </div>
       </section>
 
-      <ol class="ledger" id="ledger" aria-label="Observable event ledger"></ol>
+      <details class="proof" id="proof">
+        <summary>PROOF <span class="proof__hint">tool calls · world versions · receipt</span></summary>
+        <ol class="ledger" id="ledger" aria-label="Observable event ledger"></ol>
+        <a class="link" id="receipt" download hidden>RECEIPT.JSON</a>
+      </details>
     </main>
     <script type="module" src="./main.ts"></script>
   </body>

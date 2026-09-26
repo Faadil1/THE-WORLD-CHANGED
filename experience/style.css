@@ -95,7 +95,7 @@ code { font-family: var(--mono); }
 .pending b { color: var(--ink); }
 
 /* ---------- THE GAP ---------- */
-.gapline { display: flex; align-items: center; user-select: none; -webkit-user-select: none; padding: 58px 0 44px; }
+.gapline { display: flex; align-items: center; user-select: none; -webkit-user-select: none; padding: 58px 0 118px; }
 .node { position: relative; display: flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; flex: none; width: 64px; height: 56px; z-index: 1; }
 .node__label, .node__tick { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 .node__label { top: calc(50% + 18px); }
@@ -104,7 +104,7 @@ code { font-family: var(--mono); }
 .node__label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; font-weight: 700; }
 .node__tick { font-family: var(--mono); font-size: 11px; color: var(--ink-2); }
 .node--act { cursor: ew-resize; touch-action: none; }
-.node--act:focus-visible, .interval:focus-visible, .token:focus-visible, .switch:focus-visible, .release:focus-visible, .link:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.node--act:focus-visible, .interval:focus-visible, .token:focus-visible, .switch:focus-visible, .latch:focus-visible, .link:focus-visible, .proof summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 
 .interval {
   position: relative; height: 56px; flex: none;
@@ -154,10 +154,8 @@ code { font-family: var(--mono); }
   60% { transform: translateX(-2px) scale(0.95); }
   100% { transform: translateX(0) scale(1); }
 }
-.bench[data-outcome="STALE_AUTHORITY"] .node--act .node__dot { background: var(--paper); box-shadow: 0 0 0 4px var(--paper), 0 0 0 5.5px var(--ink); }
-.bench[data-outcome="STALE_AUTHORITY"] .node--act .node__dot::after,
+/* BLOCKED: the action stops at ACT (square stop mark). */
 .bench[data-outcome="BLOCKED"] .node--act .node__dot::after { content: ""; display: block; width: 100%; height: 100%; }
-.bench[data-outcome="STALE_AUTHORITY"] .node--act .node__dot::after { background: linear-gradient(45deg, transparent 43%, var(--ink) 43% 57%, transparent 57%), linear-gradient(-45deg, transparent 43%, var(--ink) 43% 57%, transparent 57%); }
 .bench[data-outcome="BLOCKED"] .node--act .node__dot { border-radius: 2px; }
 
 /* ---------- controls ---------- */
@@ -182,8 +180,6 @@ code { font-family: var(--mono); }
 .switch__state { min-width: 2.4em; }
 .switch:disabled { opacity: 0.45; cursor: default; }
 
-.release { min-height: 44px; padding: 10px 22px; background: var(--ink); color: var(--paper); border: 0; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.24em; cursor: pointer; }
-.release:disabled { opacity: 0.3; cursor: default; }
 
 /* ---------- verdict ---------- */
 .verdict { display: none; margin-top: 26px; align-items: center; gap: 14px 24px; flex-wrap: wrap; }
@@ -214,7 +210,6 @@ code { font-family: var(--mono); }
   .switch { margin-left: 0; }
   .controls { justify-content: space-between; }
   .token { width: 100%; justify-content: center; }
-  .release { flex: 1; }
   .ledger li { grid-template-columns: 3ch 4ch 1fr; }
   .ledger li span:nth-child(3) { display: none; }
 }
@@ -224,4 +219,84 @@ code { font-family: var(--mono); }
   .plate, .interval, .switch__knob, .mark { transition: none !important; }
   .bench[data-sweep="go"] .interval__playhead { transition: none; }
   .bench[data-impact="true"] .node--act .node__dot { animation: none; }
+}
+
+/* ---------- ACT assembly: pawl (catch), pull-pin latch, committed-effect mark ---------- */
+.actwrap { position: relative; flex: none; }
+
+/* Pawl: a tooth that engages the rail end while the gap is held open. */
+.pawl {
+  position: absolute; right: calc(100% - 22px); top: 50%;
+  width: 10px; height: 14px; margin-top: -18px;
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  opacity: 0; transform: translateY(-6px); transition: opacity 160ms, transform 200ms var(--snap);
+}
+.bench[data-latched="true"] .pawl { opacity: 1; transform: none; }
+
+/* Pull-pin: hangs from the ACT dot, holds the tension. */
+.latch {
+  --pin: 0px;
+  position: absolute; left: 50%; top: calc(50% + 8px);
+  width: 64px; height: 104px; margin-left: -32px;
+  background: none; border: 0; padding: 0;
+  cursor: grab; touch-action: none;
+  opacity: 0; pointer-events: none; transition: opacity 180ms;
+}
+.bench[data-latched="true"] .latch { opacity: 1; pointer-events: auto; }
+.latch:active { cursor: grabbing; }
+.latch__stem, .latch__ring, .latch__label { position: absolute; left: 50%; transform: translate(-50%, var(--pin)); transition: transform 280ms var(--snap); }
+.latch:active .latch__stem, .latch:active .latch__ring, .latch:active .latch__label { transition: none; }
+.latch__stem { top: 44px; width: 2px; height: 22px; margin-left: 0; background: var(--ink); }
+.latch__ring {
+  top: 64px; width: 26px; height: 26px; border-radius: 50%;
+  border: 2.5px solid var(--ink); background: var(--paper);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5.5px var(--ink);
+}
+.latch__label { top: 94px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.18em; white-space: nowrap; }
+.latch:disabled { cursor: default; }
+
+/* Committed effect: the export leaves ACT — stamped SIMULATED. */
+.effect {
+  /* occupies the band the pulled pin vacated: the export drops out of ACT */
+  position: absolute; right: calc(50% - 30px); top: calc(50% + 58px);
+  display: none; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; white-space: nowrap;
+}
+.effect b { background: var(--ink); color: var(--paper); padding: 3px 6px; font-weight: 700; }
+.effect i { font-style: normal; font-weight: 700; border: 1.5px dashed var(--ink); padding: 2px 5px; }
+.bench[data-effect="true"] .effect { display: inline-flex; animation: eject 380ms var(--snap); }
+.bench[data-outcome="UNAUTHORIZED_COMMIT"] .effect b { background: var(--magenta); }
+@keyframes eject { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+
+/* ---------- verdict additions ---------- */
+.sim {
+  display: inline-block; margin-left: 4px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  border: 1.5px dashed var(--ink); padding: 1px 6px; white-space: nowrap;
+}
+.sim[hidden] { display: none; }
+.bench[data-outcome="UNAUTHORIZED_COMMIT"] .verdict__stamp { color: var(--magenta); border-color: var(--magenta); }
+
+/* ---------- PROOF drawer (secondary; collapsed by default) ---------- */
+.proof { margin-top: 32px; border-top: 1px solid var(--rule); }
+.proof summary {
+  list-style: none; cursor: pointer; padding: 12px 0;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+  display: flex; align-items: baseline; gap: 14px; min-height: 44px; align-items: center;
+}
+.proof summary::-webkit-details-marker { display: none; }
+.proof summary::before { content: "+"; width: 1ch; }
+.proof[open] summary::before { content: "−"; }
+.proof__hint { font-weight: 400; letter-spacing: 0.04em; color: var(--ink-2); }
+.proof .ledger { margin-top: 0; border-top: 2px solid var(--ink); }
+.proof #receipt { display: inline-block; margin-top: 8px; }
+.proof #receipt[hidden] { display: none; }
+
+@media (max-width: 640px) {
+  .gapline { padding-bottom: 116px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .latch__stem, .latch__ring, .latch__label, .pawl { transition: none !important; }
+  .bench[data-effect="true"] .effect { animation: none; }
 }

@@ -54,9 +54,9 @@
         "witness_world_version": 1,
         "policy": "UNGUARDED"
       },
-      "mutation": false,
+      "mutation": true,
       "world_version_before": 2,
-      "world_version_after": 2
+      "world_version_after": 3
     }
   ],
   "observations": [
@@ -84,14 +84,14 @@
       "current_access_state": "REVOKED",
       "witness_stale": true,
       "interval_ticks": 9,
-      "result": "STALE_AUTHORITY",
-      "reason": "AUTHORIZATION_VERSION_ADVANCED",
-      "effect_id": null
+      "result": "UNAUTHORIZED_COMMIT",
+      "reason": "STALE_AUTHORITY",
+      "effect_id": "eff-4"
     }
   ],
-  "final_world_version": 2,
+  "final_world_version": 3,
   "final_state": {
-    "world_version": 2,
+    "world_version": 3,
     "access_state": "REVOKED",
     "authorization_version": 2,
     "pending_action": {
@@ -103,22 +103,37 @@
       "witness_world_version": 1,
       "witness_authorization_version": 1
     },
-    "committed_effects": []
+    "committed_effects": [
+      {
+        "id": "eff-4",
+        "kind": "EXPORT",
+        "realm": "SANDBOX",
+        "simulated": true,
+        "authorized": false,
+        "access_state_at_commit": "REVOKED",
+        "record_count": 2926,
+        "world_version": 3
+      }
+    ]
   },
-  "outcome": "STALE_AUTHORITY",
+  "outcome": "UNAUTHORIZED_COMMIT",
   "stale_authority": {
     "attempt_id": "att-4",
     "witness_world_version": 1,
     "world_version_at_commit": 2,
     "witness_authorization_version": 1,
     "authorization_version_at_commit": 2,
+    "witnessed_access_state": "GRANTED",
+    "access_state_at_commit": "REVOKED",
     "versions_behind": 1,
     "mutations_between": [
       {
         "seq": 3,
         "type": "ADMIN_REVOKES_ACCESS"
       }
-    ]
+    ],
+    "revalidated_at_commit": false,
+    "effect_id": "eff-4"
   },
-  "replay_hash": "0a770aef"
+  "replay_hash": "4318ef42"
 }

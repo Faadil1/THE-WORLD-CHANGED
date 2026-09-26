@@ -60,7 +60,7 @@ describe("hero controller consumes the kernel, never invents outcomes", () => {
 
   it("replay with the other policy reuses the same world events", () => {
     const c = drive("UNGUARDED", true);
-    expect(c.snapshot().outcome).toBe("STALE_AUTHORITY");
+    expect(c.snapshot().outcome).toBe("UNAUTHORIZED_COMMIT");
     c.replay("GUARDED");
     c.release();
     while (c.step()) {

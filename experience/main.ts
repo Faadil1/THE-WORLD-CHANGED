@@ -16,7 +16,7 @@ const interval = $("interval");
 const act = $<HTMLButtonElement>("act");
 const token = $<HTMLButtonElement>("token");
 const guard = $<HTMLButtonElement>("guard");
-const releaseBtn = $<HTMLButtonElement>("release");
+const latch = $<HTMLButtonElement>("latch");
 const replayOther = $<HTMLButtonElement>("replay-other");
 const resetBtn = $<HTMLButtonElement>("reset");
 const receiptLink = $<HTMLAnchorElement>("receipt");
@@ -73,8 +73,10 @@ function render(s: HeroSnapshot): void {
 
   // Pending action line
   const p = w.pendingAction;
+  const eff = w.committedEffects.at(-1);
+  const status = eff ? (eff.authorized ? "committed · simulated" : "committed without authority · simulated") : p?.status === "RESOLVED" ? "blocked" : p?.status.toLowerCase();
   $("pending").innerHTML = p
-    ? `EXPORT · <b>${fmt(p.recordCount)}</b> records · relies on observation <b>v${p.witnessWorldVersion}</b> · ${p.status.toLowerCase()}`
+    ? `EXPORT · <b>${fmt(p.recordCount)}</b> records · relies on observation <b>v${p.witnessWorldVersion}</b> · ${status}`
     : "";
 
   // Gap geometry
@@ -109,24 +111,33 @@ function render(s: HeroSnapshot): void {
   guard.setAttribute("aria-checked", String(s.policy === "GUARDED"));
   $("guard-state").textContent = s.policy === "GUARDED" ? "ON" : "OFF";
   guard.disabled = s.phase === "COMMITTING" || s.phase === "RESOLVED";
-  releaseBtn.disabled = !ctl.canRelease();
+  // The latch exists only while the gap is held open (tension on the instrument).
+  const latched = s.phase === "OPEN" || s.phase === "INSERTED";
+  bench.dataset.latched = String(latched);
+  latch.disabled = !latched || !ctl.canRelease();
+  if (!latched) latch.style.removeProperty("--pin");
 
   // Verdict
-  if (s.phase === "RESOLVED") {
+  const receiptReady = s.phase === "RESOLVED";
+  receiptLink.hidden = !receiptReady;
+  if (receiptReady) {
     const a = w.actionAttempts.at(-1)!;
-    $("stamp").textContent = a.result;
+    const effect = w.committedEffects.find((e) => e.id === a.effectId);
+    $("stamp").textContent = a.result.replace("_", " ");
+    $("sim").hidden = !effect;
     $("why").textContent =
-      a.result === "STALE_AUTHORITY"
-        ? `Commit carried authority observed at v${a.witnessWorldVersion}. The world was at v${a.currentWorldVersion}. The sandbox rejected it — no export occurred.`
+      a.result === "UNAUTHORIZED_COMMIT"
+        ? `Exported ${fmt(effect!.recordCount)} records on access observed at v${a.witnessWorldVersion}. At commit, access was ${a.currentAccessState} (v${a.currentWorldVersion}). Nothing re-checked.`
         : a.result === "BLOCKED"
-          ? `Re-checked at commit: v${a.witnessWorldVersion} · ${a.currentAccessState}. Export blocked — nothing left the sandbox.`
-          : `Nothing changed in the gap. Export committed inside the sandbox (world → v${w.worldVersion}).`;
+          ? `Re-checked at commit: ${a.currentAccessState} at v${a.witnessWorldVersion}. Export blocked — no effect.`
+          : `Nothing changed in the gap. Export committed with current access (v${a.witnessWorldVersion}).`;
     replayOther.textContent = s.policy === "GUARDED" ? "↻ SAME WORLD · CHECK OFF" : "↻ SAME WORLD · CHECK ON";
     const blob = new Blob([JSON.stringify(ctl.receipt(), null, 2)], { type: "application/json" });
     if (receiptLink.href.startsWith("blob:")) URL.revokeObjectURL(receiptLink.href);
     receiptLink.href = URL.createObjectURL(blob);
     receiptLink.download = `receipt.${s.policy.toLowerCase()}.${SEED}.json`;
   }
+  bench.dataset.effect = String(w.committedEffects.length > 0);
 
   renderLedger(w);
 }
@@ -156,7 +167,7 @@ function ledgerRow(w: WorldState, e: WorldEvent): string {
       break;
     case "COMMIT_EXPORT": {
       const a = w.actionAttempts.find((x) => x.seq === e.seq)!;
-      text = `commit_export(witness=v${e.witnessWorldVersion}) → ${a.result}${a.witnessStale ? ` · witness ${a.currentWorldVersion - a.witnessWorldVersion} version behind` : ""}`;
+      text = `commit_export(witness=v${e.witnessWorldVersion}) → ${a.result}${a.witnessStale ? ` · STALE_AUTHORITY (witness v${a.witnessWorldVersion}, world v${a.currentWorldVersion}, ${a.currentAccessState})` : ""}${a.effectId ? ` · ${a.effectId} SANDBOX/SIMULATED` : ""}`;
       cls = "is-result";
       break;
     }
@@ -304,7 +315,48 @@ async function doRelease(): Promise<void> {
   }
   releasing = false;
 }
-releaseBtn.addEventListener("click", () => void doRelease());
+// ---------- LATCH: pull the pin to release the tensioned gap ----------
+const PIN_TRIGGER = 34; // px of travel that disengages the latch
+latch.addEventListener("pointerdown", (ev) => {
+  if (latch.disabled) return;
+  ev.preventDefault();
+  latch.setPointerCapture(ev.pointerId);
+  const y0 = ev.clientY;
+  let fired = false;
+  let travel = 0;
+  const move = (e: PointerEvent) => {
+    travel = Math.max(0, e.clientY - y0);
+    // resistance: the pin gives slowly, then pops
+    latch.style.setProperty("--pin", `${Math.min(travel, PIN_TRIGGER) * 0.8}px`);
+    if (!fired && travel >= PIN_TRIGGER) {
+      fired = true;
+      latch.style.setProperty("--pin", "64px");
+      void doRelease();
+    }
+  };
+  const up = () => {
+    latch.removeEventListener("pointermove", move);
+    latch.removeEventListener("pointerup", up);
+    latch.removeEventListener("pointercancel", up);
+    if (!fired && travel < 6) {
+      // A tap on the pin (one-thumb path) pulls it fully.
+      latch.style.setProperty("--pin", "64px");
+      void doRelease();
+    } else if (!fired) {
+      latch.style.removeProperty("--pin"); // pin springs back into the catch
+    }
+  };
+  latch.addEventListener("pointermove", move);
+  latch.addEventListener("pointerup", up);
+  latch.addEventListener("pointercancel", up);
+});
+// Keyboard activation (Enter/Space) arrives as a click with detail 0.
+latch.addEventListener("click", (e) => {
+  if (e.detail === 0 && !latch.disabled) {
+    latch.style.setProperty("--pin", "64px");
+    void doRelease();
+  }
+});
 
 replayOther.addEventListener("click", async () => {
   const other = ctl.snapshot().policy === "GUARDED" ? "UNGUARDED" : "GUARDED";
