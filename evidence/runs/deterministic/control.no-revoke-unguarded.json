@@ -1,0 +1,112 @@
+{
+  "mode": "deterministic",
+  "scenario": "authority-expired",
+  "kernel_version": "kernel-v0",
+  "seed": "twc-hero-0001",
+  "policy": "UNGUARDED",
+  "initial_world_version": 1,
+  "initial_state": {
+    "world_version": 1,
+    "access_state": "GRANTED",
+    "authorization_version": 1,
+    "pending_action": null,
+    "committed_effects": []
+  },
+  "events": [
+    {
+      "seq": 1,
+      "tick": 0,
+      "type": "OBSERVE_ACCESS",
+      "actor": "AGENT",
+      "payload": {},
+      "mutation": false,
+      "world_version_before": 1,
+      "world_version_after": 1
+    },
+    {
+      "seq": 2,
+      "tick": 1,
+      "type": "PREPARE_EXPORT",
+      "actor": "AGENT",
+      "payload": {
+        "record_count": 2926
+      },
+      "mutation": false,
+      "world_version_before": 1,
+      "world_version_after": 1
+    },
+    {
+      "seq": 3,
+      "tick": 9,
+      "type": "COMMIT_EXPORT",
+      "actor": "AGENT",
+      "payload": {
+        "witness_world_version": 1,
+        "policy": "UNGUARDED"
+      },
+      "mutation": true,
+      "world_version_before": 1,
+      "world_version_after": 2
+    }
+  ],
+  "observations": [
+    {
+      "id": "obs-1",
+      "seq": 1,
+      "tick": 0,
+      "kind": "OBSERVE",
+      "witnessed_world_version": 1,
+      "witnessed_authorization_version": 1,
+      "access_state": "GRANTED"
+    }
+  ],
+  "action_attempts": [
+    {
+      "id": "att-3",
+      "seq": 3,
+      "tick": 9,
+      "action_id": "act-2",
+      "policy": "UNGUARDED",
+      "witness_world_version": 1,
+      "witness_authorization_version": 1,
+      "current_world_version": 1,
+      "current_authorization_version": 1,
+      "current_access_state": "GRANTED",
+      "witness_stale": false,
+      "interval_ticks": 9,
+      "result": "COMMITTED",
+      "reason": "WITNESS_CURRENT",
+      "effect_id": "eff-3"
+    }
+  ],
+  "final_world_version": 2,
+  "final_state": {
+    "world_version": 2,
+    "access_state": "GRANTED",
+    "authorization_version": 1,
+    "pending_action": {
+      "id": "act-2",
+      "kind": "EXPORT",
+      "record_count": 2926,
+      "status": "RESOLVED",
+      "ineligible_reason": null,
+      "witness_world_version": 1,
+      "witness_authorization_version": 1
+    },
+    "committed_effects": [
+      {
+        "id": "eff-3",
+        "kind": "EXPORT",
+        "realm": "SANDBOX",
+        "simulated": true,
+        "authorized": true,
+        "access_state_at_commit": "GRANTED",
+        "record_count": 2926,
+        "world_version": 2
+      }
+    ]
+  },
+  "outcome": "COMMITTED",
+  "stale_authority": null,
+  "replay_hash": "33e421df"
+}

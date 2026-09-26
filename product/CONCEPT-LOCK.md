@@ -37,7 +37,7 @@ OBSERVE ●────────────● ACT
 
 PULL THE GAP
 
-`press -> pull -> insert world event -> release`
+`press -> pull -> insert world event -> release latch`
 
 ### Visitor role
 
@@ -72,11 +72,24 @@ The original witness is stale.
 
 **UNGUARDED**
 
-Action reaches commit time using stale authority -> `STALE_AUTHORITY`.
+The system performs no commit-time authority revalidation.
+
+The action commits inside the deterministic sandbox using the stale witness.
+
+The receipt records:
+
+- `witness_stale: true`
+- current authority `REVOKED`
+- no commit-time revalidation
+- a `SANDBOX / SIMULATED` effect
+- outcome `UNAUTHORIZED_COMMIT`
+- reason `STALE_AUTHORITY`
+
+No real external data or system is touched.
 
 **GUARDED**
 
-Action re-verifies current state -> observation refreshes -> `BLOCKED`.
+Action re-verifies current state -> observation refreshes -> `BLOCKED` -> no effect.
 
 ## Narrative law
 
@@ -98,6 +111,15 @@ REALITY = current sandbox state.
 
 The public experience may show only inspectable evidence such as observations, tool calls, world versions, mutations, receipts, and outcomes.
 
+## Visual law
+
+Pulling THE GAP does not itself create disagreement.
+
+- gap width = elapsed vulnerability interval;
+- BELIEF and REALITY remain registered while the world is unchanged;
+- misregistration begins only after a world mutation makes the last observed state stale;
+- commit-time reverification can re-register BELIEF with REALITY.
+
 ## Scope
 
 Phase 1 contains one experiment only.
@@ -116,4 +138,5 @@ Without reading an explanation, a visitor should infer:
 1. the agent observed one valid state;
 2. something changed afterward;
 3. the agent's observation became stale;
-4. checking again immediately before an irreversible action changes the outcome.
+4. without a re-check, a sandboxed simulated effect can commit under stale authority;
+5. checking again immediately before the irreversible action changes the outcome.

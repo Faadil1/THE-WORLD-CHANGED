@@ -2,7 +2,7 @@ project: THE-WORLD-CHANGED
 series: 30 Days of Real Business Problems
 day_number: TBD
 status: CONCEPT_LOCKED
-phase: TECHNICAL_REALITY_CHECK
+phase: LIVE_PROOF_PREP
 updated: 2026-09-26
 
 premise: "A live AI agent sees the world correctly. You change the world before it acts."
@@ -14,6 +14,8 @@ canon:
   hero_scenario: AUTHORITY_EXPIRED_AFTER_OBSERVATION
   visual_grammar: BELIEF_REALITY_MISREGISTRATION
   recovery: COMMIT_TIME_REVERIFY
+  deterministic_unguarded_outcome: UNAUTHORIZED_COMMIT
+  deterministic_guarded_outcome: BLOCKED
   proof_mode: REAL_OPUS_RUNS_AGAINST_DETERMINISTIC_SANDBOX
 
 gates:
@@ -21,17 +23,34 @@ gates:
   collision_research: PROVEN_WITH_PRECEDENTS
   novelty_claim: INTERACTION_EXPERIENCE_ONLY
   concept_lock: PROVEN
-  technical_reality: ACTIVE
-  deterministic_replay: ACTIVE
+  technical_reality: PROVEN
+  deterministic_replay: PROVEN
+  reproducible_receipts: PROVEN_DETERMINISTIC
+  interaction_prototype: PROVEN_FUNCTIONAL
+  human_comprehension: ACTIVE_NOT_YET_PROVEN
+  sandbox_tool_isolation: ACTIVE_NOT_YET_PROVEN
+  live_mode_distinction: ACTIVE_NOT_YET_PROVEN
   real_opus_execution: ACTIVE_NOT_YET_PROVEN
-  reproducible_receipts: ACTIVE
   destructive_external_actions: N_A
   payments_x402_wallets: N_A
   production_scale: N_A
 
-next:
+technical_reality_receipt:
   branch: build/kernel-v0
-  objective: "Implement deterministic sandbox kernel and prove guarded/unguarded authority-expiry paths before visual expansion."
+  commit: 8fb1d76621714c789231cf361bb150a878d928a1
+  tests_reported: 56
+  deterministic_unguarded:
+    outcome: UNAUTHORIZED_COMMIT
+    reason: STALE_AUTHORITY
+    effect_realm: SANDBOX
+    simulated: true
+  deterministic_guarded:
+    outcome: BLOCKED
+    effect_count: 0
+
+next:
+  branch: build/live-proof-v0
+  objective: "Prove sandbox tool isolation, add explicit LIVE MODEL vs DETERMINISTIC SANDBOX distinction, then connect Claude Opus 5.5 without forcing an outcome."
 
 hard_exclusions:
   - DASHBOARD

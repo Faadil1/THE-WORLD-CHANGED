@@ -1,6 +1,6 @@
 # INTERACTION SPEC — PULL THE GAP
 
-**Status:** CANONICAL V0  
+**Status:** CANONICAL V0.1 (gate-review correction, 2026-09-26)  
 **Primary device:** desktop pointer / touch drag  
 **Mobile requirement:** one-thumb fallback must preserve the same causal meaning.
 
@@ -41,11 +41,18 @@ The visitor drags horizontally to open the interval.
 
 Effects tied to gap width:
 - elapsed vulnerability interval increases;
-- BELIEF and REALITY begin to separate;
 - temporal scale stretches;
+- the interval carries visible tension (the instrument is under load);
 - event tray becomes actionable.
 
+Pulling alone does **not** separate BELIEF and REALITY. Gap width is only the elapsed
+vulnerability interval — time in which the world *could* change. While nothing has changed,
+the plates stay perfectly registered.
+
 The gap must feel elastic, not like a range slider.
+
+On letting go, the gap stays **mechanically latched open** at the width pulled. A latch at
+ACT holds the tension. (A single pointer cannot hold the gap and carry an event at once.)
 
 ### 3. INSERT
 
@@ -59,6 +66,9 @@ On drop:
 
 ### 4. MISREGISTER
 
+Misregistration begins only when a world mutation actually causes BELIEF ≠ REALITY —
+never from gap width, time passing, or gesture state alone.
+
 Once state differs:
 - duplicated contours become visible;
 - typography offsets;
@@ -70,7 +80,9 @@ Do not rely only on red/green.
 
 ### 5. RELEASE
 
-The visitor releases THE GAP.
+The visitor releases THE GAP by disengaging the latch that holds it open — a spatial,
+mechanical affordance attached to the ACT end of the interval (e.g. pulling a pin), not a
+form-style submit button. Keyboard/tap activation of the same latch must remain available.
 
 The interval snaps toward ACT.
 
@@ -78,13 +90,17 @@ The visual energy should communicate inevitability: the prepared action is now r
 
 ### 6A. UNGUARDED OUTCOME
 
-The action attempts to commit using the stale witness.
+The system performs no commit-time revalidation. The action commits using the stale witness.
 
-The simulator returns:
+In the deterministic sandbox this commits a **simulated** export effect:
 
-`STALE_AUTHORITY`
+- the receipt records the stale witness (`reason: STALE_AUTHORITY`, `witness_stale: true`);
+- the receipt records that current authority was `REVOKED` at commit;
+- the outcome is `UNAUTHORIZED_COMMIT`;
+- the effect is marked `realm: SANDBOX`, `simulated: true`, `authorized: false`.
 
-The experience must not imply that an unsafe external action actually occurred if the sandbox rejected it.
+The experience must show the effect as SIMULATED and must never imply that real data left
+the sandbox or that a live system performed the action.
 
 ### 6B. GUARDED OUTCOME
 
@@ -102,10 +118,11 @@ The action resolves to:
 
 | Motion | Meaning |
 |---|---|
-| gap width | elapsed vulnerability interval |
-| plate separation | disagreement magnitude |
+| gap width | elapsed vulnerability interval (never disagreement) |
+| plate separation | disagreement magnitude — only after a world mutation |
 | print misregistration | stale observed state |
 | elastic tension | action pending while time passes |
+| latch disengage | tension released by the visitor |
 | snap | interval closes / commit approached |
 | magnetic re-register | fresh verification |
 | stopped action | blocked irreversible effect |
@@ -113,6 +130,9 @@ The action resolves to:
 ## Visual target
 
 Scientific instrument + precision mechanical test bench + editorial print registration.
+
+The primary viewport communicates the causal chain. Technical evidence (tool/event ledger,
+receipt JSON) sits behind a secondary PROOF affordance, collapsed by default.
 
 Avoid:
 - generic cards;
@@ -139,7 +159,7 @@ The 15-second social cut must work sound-off.
 
 - full causal chain must remain legible without color;
 - reduced-motion mode replaces elastic motion with discrete state transitions while preserving registration/diff states;
-- keyboard path must support open gap, move event, commit/replay;
+- keyboard path must support open gap, move event, release latch, replay;
 - touch targets must remain practical on mobile.
 
 ## Failure criterion
