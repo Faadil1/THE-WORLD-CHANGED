@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The World Changed</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="bench" id="bench" data-phase="CLOSED" data-policy="UNGUARDED" data-misregistered="false">
+      <header class="masthead">
+        <h1 class="title">THE WORLD CHANGED</h1>
+        <p class="mode">
+          <span class="mode__chip">DETERMINISTIC SANDBOX</span>
+          <span>scripted agent — not a live model</span>
+          <span class="mode__seed">seed <code id="seed"></code></span>
+        </p>
+      </header>
+
+      <!-- BELIEF / REALITY print plates. Registered = one surface. -->
+      <section class="plates" aria-label="Belief and reality">
+        <div class="plate plate--reality" id="plate-reality">
+          <span class="mark mark--tl"></span><span class="mark mark--tr"></span>
+          <span class="mark mark--bl"></span><span class="mark mark--br"></span>
+          <span class="plate__field">ACCESS</span>
+          <span class="plate__value" id="reality-access">GRANTED</span>
+          <span class="plate__tag plate__tag--reality">REALITY · world <b>v<span id="reality-version">1</span></b></span>
+        </div>
+        <div class="plate plate--belief" id="plate-belief" aria-hidden="true">
+          <span class="mark mark--tl"></span><span class="mark mark--tr"></span>
+          <span class="mark mark--bl"></span><span class="mark mark--br"></span>
+          <span class="plate__field">ACCESS</span>
+          <span class="plate__value" id="belief-access">GRANTED</span>
+          <span class="plate__tag plate__tag--belief">BELIEF · observed <b>v<span id="belief-version">1</span></b></span>
+        </div>
+        <p class="sr-only" id="plates-sr" aria-live="polite"></p>
+      </section>
+
+      <p class="pending" id="pending"></p>
+
+      <!-- THE GAP -->
+      <section class="gapline" id="gapline">
+        <div class="node node--observe">
+          <span class="node__dot"></span>
+          <span class="node__label">OBSERVE</span>
+          <span class="node__tick">t0</span>
+        </div>
+        <div
+          class="interval"
+          id="interval"
+          role="slider"
+          tabindex="0"
+          aria-label="The gap between observation and action. Arrow keys widen or narrow."
+          aria-valuemin="2"
+          aria-valuemax="24"
+          aria-valuenow="2"
+        >
+          <div class="interval__rail"></div>
+          <div class="interval__ticks" id="ticks"></div>
+          <div class="interval__hint" id="hint">PULL THE GAP →</div>
+          <div class="interval__ghost" id="ghost"></div>
+          <div class="interval__event" id="placed"><span>ADMIN REVOKES ACCESS</span></div>
+          <div class="interval__playhead" id="playhead"></div>
+        </div>
+        <button class="node node--act" id="act" aria-label="Act handle — drag to pull the gap open">
+          <span class="node__dot"></span>
+          <span class="node__label">ACT</span>
+          <span class="node__tick" id="act-tick">t3</span>
+        </button>
+      </section>
+
+      <section class="controls">
+        <button class="token" id="token" aria-describedby="token-help">
+          <span class="token__grip" aria-hidden="true">⋮⋮</span> ADMIN REVOKES ACCESS
+        </button>
+        <span class="sr-only" id="token-help">Enter to pick up, arrow keys to position inside the gap, Enter to drop.</span>
+
+        <button class="switch" id="guard" role="switch" aria-checked="false">
+          <span class="switch__label">CHECK AT COMMIT</span>
+          <span class="switch__track"><span class="switch__knob"></span></span>
+          <span class="switch__state" id="guard-state">OFF</span>
+        </button>
+
+        <button class="release" id="release">RELEASE</button>
+      </section>
+
+      <section class="verdict" id="verdict" aria-live="assertive">
+        <div class="verdict__stamp" id="stamp"></div>
+        <p class="verdict__why" id="why"></p>
+        <div class="verdict__actions">
+          <button class="link" id="replay-other"></button>
+          <button class="link" id="reset">RESET</button>
+          <a class="link" id="receipt" download>RECEIPT.JSON</a>
+        </div>
+      </section>
+
+      <ol class="ledger" id="ledger" aria-label="Observable event ledger"></ol>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "desktop_unguarded_outcome": "STALE_AUTHORITY",
+  "desktop_unguarded_stale_authority": {
+    "attempt_id": "att-4",
+    "witness_world_version": 1,
+    "world_version_at_commit": 2,
+    "witness_authorization_version": 1,
+    "authorization_version_at_commit": 2,
+    "versions_behind": 1,
+    "mutations_between": [
+      {
+        "seq": 3,
+        "type": "ADMIN_REVOKES_ACCESS"
+      }
+    ]
+  },
+  "desktop_guarded_outcome": "BLOCKED",
+  "keyboard_reduced_motion_outcome": "BLOCKED",
+  "mobile_replay_outcome": "BLOCKED",
+  "screenshots": [
+    "desktop-A-unguarded-0-default-registered.png",
+    "desktop-A-unguarded-1-pull-held.png",
+    "desktop-A-unguarded-2-insert-hover.png",
+    "desktop-A-unguarded-3-misregistered.png",
+    "desktop-A-unguarded-5-outcome.png",
+    "desktop-B-guarded-3-misregistered-check-on.png",
+    "desktop-B-guarded-4-reverify-snap.png",
+    "desktop-B-guarded-5-outcome.png",
+    "keyboard-reduced-motion-outcome.png",
+    "mobile-0-default.png",
+    "mobile-1-misregistered.png",
+    "mobile-2-outcome-unguarded.png",
+    "mobile-3-replay-guarded.png"
+  ]
+}
