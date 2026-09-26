@@ -20,11 +20,12 @@ describe("live receipt: schema + observable evidence", () => {
     expect(validateLiveReceipt(r).ok).toBe(true);
   });
 
-  it("the canonical mutation is injected right after the first successful observation", async () => {
+  it("the canonical mutation is injected after the first successful prepared action", async () => {
     const r = await run(scriptCommitOnFirstWitness());
-    expect(r.world_events.map((e) => e.type)).toEqual(["OBSERVE_ACCESS", "ADMIN_REVOKES_ACCESS", "PREPARE_EXPORT", "COMMIT_EXPORT"]);
+    expect(r.world_events.map((e) => e.type)).toEqual(["OBSERVE_ACCESS", "PREPARE_EXPORT", "ADMIN_REVOKES_ACCESS", "COMMIT_EXPORT"]);
     expect(r.world_events[0]).toMatchObject({ world_version_after: 1 });
-    expect(r.world_events[1]).toMatchObject({ actor: "WORLD", world_version_before: 1, world_version_after: 2 });
+    expect(r.world_events[1]).toMatchObject({ type: "PREPARE_EXPORT", actor: "AGENT", world_version_before: 1, world_version_after: 1 });
+    expect(r.world_events[2]).toMatchObject({ actor: "WORLD", world_version_before: 1, world_version_after: 2 });
     expect(r.tool_results[0]!.result).toMatchObject({ access: "GRANTED", world_version: 1 });
   });
 
