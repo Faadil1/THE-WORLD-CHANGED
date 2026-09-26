@@ -16,6 +16,7 @@ import {
 } from "../simulation/src";
 import type { LiveReceipt } from "../live/receipt";
 import { deterministicIdentity, liveIdentity, transportLabel, type ModeIdentity } from "./mode";
+import { OUTCOME_LABELS, beliefTag, causalSteps, liveBehaviorLabel, sameWorldOutcomes } from "./causal";
 
 const params = new URLSearchParams(location.search);
 const SEED = params.get("seed") || "twc-hero-0001";
@@ -94,11 +95,17 @@ function draw(s: HeroSnapshot): void {
   $("reality-version").textContent = String(w.worldVersion);
   $("belief-access").textContent = b?.accessState ?? "—";
   $("belief-version").textContent = String(b?.witnessedWorldVersion ?? "—");
+  const bt = beliefTag(w);
+  $("belief-verb").textContent = bt.rechecked ? "agent re-checked" : "agent saw";
+  bench.dataset.stale = String(bt.stale);
+  bench.dataset.rechecked = String(bt.rechecked);
+  bench.dataset.changed = String(w.eventLog.some((e) => e.type === "ADMIN_REVOKES_ACCESS"));
+  renderSequence(w, s.phase === "RESOLVED");
   const sep = s.misregistered && b ? w.authorizationVersion - b.witnessedAuthorizationVersion : 0;
   bench.style.setProperty("--sep", String(sep));
   $("plates-sr").textContent = s.misregistered
-    ? `Out of register. Belief: ${b?.accessState} observed at version ${b?.witnessedWorldVersion}. Reality: ${w.accessState} at version ${w.worldVersion}.`
-    : `In register. Access ${w.accessState} at version ${w.worldVersion}.`;
+    ? `Out of register. The agent's observation is stale: it saw ${b?.accessState} at version ${b?.witnessedWorldVersion}. The world is now ${w.accessState} at version ${w.worldVersion}.`
+    : `In register. The agent's observation matches the world: access ${w.accessState} at version ${w.worldVersion}.`;
 
   // Pending action line
   const p = w.pendingAction;
@@ -131,7 +138,9 @@ function draw(s: HeroSnapshot): void {
   if (s.revokeTick !== null) {
     const placed = $("placed");
     placed.style.setProperty("--x", pct(s.revokeTick));
-    placed.querySelector("span")!.textContent = `ADMIN REVOKES ACCESS · t${s.revokeTick}`;
+    const label = placed.querySelector("span")!;
+    label.textContent = `ADMIN REVOKES ACCESS · t${s.revokeTick}`;
+    keepInside(label, $("gapline"));
   }
   $("playhead").style.setProperty("--from", pct(s.revokeTick ?? PREPARE_TICK));
 
@@ -161,14 +170,55 @@ function draw(s: HeroSnapshot): void {
           ? `Re-checked at commit: ${a.currentAccessState} at v${a.witnessWorldVersion}. Export blocked — no effect.`
           : `Nothing changed in the gap. Export committed with current access (v${a.witnessWorldVersion}).`;
     replayOther.textContent = s.policy === "GUARDED" ? "↻ SAME WORLD · CHECK OFF" : "↻ SAME WORLD · CHECK ON";
+    renderSameWorld(s);
     const blob = new Blob([JSON.stringify(ctl.receipt(), null, 2)], { type: "application/json" });
     if (receiptLink.href.startsWith("blob:")) URL.revokeObjectURL(receiptLink.href);
     receiptLink.href = URL.createObjectURL(blob);
     receiptLink.download = `receipt.${s.policy.toLowerCase()}.${SEED}.json`;
   }
   bench.dataset.effect = String(w.committedEffects.length > 0);
+  if (!receiptReady) $("sameworld").hidden = true;
 
   renderLedger(w);
+}
+
+/** Nudge a centred label so it never leaves its container (short gaps, narrow screens). */
+function keepInside(el: HTMLElement, box: HTMLElement): void {
+  el.style.marginLeft = "0px";
+  const r = el.getBoundingClientRect();
+  const b = box.getBoundingClientRect();
+  if (r.width === 0) return;
+  const shift = r.left < b.left ? b.left - r.left : r.right > b.right ? b.right - r.right : 0;
+  el.style.marginLeft = `${shift}px`;
+}
+
+function renderSequence(w: WorldState, resolved: boolean): void {
+  const steps = causalSteps(w, resolved);
+  for (const st of steps) {
+    const li = $("sequence").querySelector<HTMLElement>(`[data-step="${st.key}"]`)!;
+    li.dataset.state = st.state;
+    if (st.key === "outcome") $("step-outcome").textContent = st.label;
+  }
+  bench.dataset.outcomeStep = steps[3]!.label;
+  bench.dataset.stopped = String(steps[3]!.label === OUTCOME_LABELS.stopped);
+}
+
+/** Deterministic only: both commit policies on this exact world, computed by the kernel. */
+function renderSameWorld(s: HeroSnapshot): void {
+  const table = $("sameworld");
+  if (identity.mode !== "deterministic") {
+    table.hidden = true;
+    return;
+  }
+  const rows = sameWorldOutcomes(s.seed, s.gapTicks, s.revokeTick);
+  $("sameworld-rows").innerHTML = rows
+    .map(
+      (r) =>
+        `<tr data-policy="${r.policy}" data-effect="${r.effect}"${r.policy === s.policy ? ' aria-current="true"' : ""}>` +
+        `<th scope="row">CHECK AT COMMIT ${r.check}</th><td>${r.result}</td><td>${r.policy === s.policy ? "THIS RUN" : ""}</td></tr>`,
+    )
+    .join("");
+  table.hidden = false;
 }
 
 function renderLedger(w: WorldState): void {
@@ -447,14 +497,19 @@ function renderLive(id: ModeIdentity): void {
   transport.textContent = `TRANSPORT · ${transportLabel(r.transport)}` + (r.claude_code_sdk?.init ? ` · session ${r.claude_code_sdk.init.session_id} · init model ${r.claude_code_sdk.init.model} · tools ${r.claude_code_sdk.init.tools.join(", ")}` : "");
   transport.hidden = false;
   const bh = r.behavior;
-  $("stamp").textContent = r.outcome.replaceAll("_", " ");
+  // Primary label comes from observable behavior; the raw classifier outcome stays in PROOF.
+  $("stamp").textContent = liveBehaviorLabel(r);
+  bench.dataset.liveLabel = liveBehaviorLabel(r);
+  const raw = $("raw-outcome");
+  raw.textContent = `RAW RECEIPT OUTCOME · ${r.outcome} · ${r.outcome_basis}${r.requires_human_review ? " · flagged for human review" : ""}`;
+  raw.hidden = false;
   $("sim").hidden = r.final_state.committed_effects.length === 0;
   $("why").textContent =
-    `Observed ${bh.first_observation?.access ?? "—"} at v${bh.first_observation?.world_version ?? "—"}. ` +
-    `World changed at v${bh.revocation_world_version ?? "—"}. ` +
-    `Tool calls: ${bh.tool_sequence.join(" → ") || "none"}. ` +
-    `Re-verified on its own: ${bh.reverified_after_mutation ? "yes" : "no"}.` +
-    (r.requires_human_review ? " Outcome from final message text — needs human review." : "");
+    `Saw ${bh.first_observation?.access ?? "—"} (v${bh.first_observation?.world_version ?? "—"}) and prepared the export. ` +
+    `The world changed (v${bh.revocation_world_version ?? "—"}). ` +
+    (bh.reverified_after_mutation
+      ? `It re-checked on its own${bh.observed_revocation ? ", saw REVOKED" : ""}${bh.commit_attempted ? "" : ", and did not commit"}.`
+      : "It did not re-check.");
   const blob = new Blob([JSON.stringify(r, null, 2)], { type: "application/json" });
   receiptLink.href = URL.createObjectURL(blob);
   receiptLink.download = `live-receipt.${r.seed}.json`;

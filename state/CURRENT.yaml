@@ -28,7 +28,7 @@ gates:
   deterministic_replay: PROVEN
   reproducible_receipts: PROVEN_DETERMINISTIC
   interaction_prototype: PROVEN_FUNCTIONAL
-  human_comprehension: ACTIVE_NOT_YET_PROVEN
+  human_comprehension: ACTIVE_PASS_1_MACHINE_VALIDATED_AWAITING_HUMAN_TESTS
   sandbox_tool_isolation: PROVEN
   live_mode_distinction: PROVEN
   live_receipt_pipeline: PROVEN_PREP
@@ -83,9 +83,18 @@ open_observations:
   - "Streamed SDK assistant frames carry stop_reason null; per-turn stop reasons are absent (final stop_reason end_turn is from the result message)."
   - "Outcome REFUSED comes from the final-text rule; a human should confirm the label (the model re-verified, saw REVOKED/INELIGIBLE, and stopped)."
 
+comprehension_pass_1:
+  branch: build/comprehension-v0
+  live_primary_label: "RE-VERIFIED · STOPPED BEFORE COMMIT"
+  live_raw_outcome: "REFUSED (PROOF only; receipt unchanged)"
+  storyboard: product/STORYBOARD-15S.md
+  storyboard_evidence: evidence/storyboard/comprehension-v0/
+  screenshots: evidence/screenshots/comprehension-v0/
+  validated: [desktop, mobile, reduced_motion, keyboard, live_view]
+
 next:
-  branch: build/live-proof-v0
-  objective: "Prove that first-time visitors understand OBSERVE -> WORLD CHANGES -> STALE/REVERIFY -> OUTCOME without explanatory prose, then perform final visual and publishing refinement."
+  branch: build/comprehension-v0
+  objective: "Run first-impression tests with real first-time visitors (PROOF collapsed, no briefing) on the pass-1 hero and the 15s clip; prove they understand OBSERVE -> WORLD CHANGES -> STALE/REVERIFY -> OUTCOME without explanatory prose, then perform final visual and publishing refinement."
 
 hard_exclusions:
   - DASHBOARD

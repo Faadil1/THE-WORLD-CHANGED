@@ -76,6 +76,9 @@ def live(browser, run=None):
     body = page.inner_text("body")
     mode = page.eval_on_selector("#bench", "e => e.dataset.mode")
     stamp = page.inner_text("#stamp")
+    # primary viewport = everything except the (collapsed) PROOF drawer
+    primary = page.evaluate("() => { const b = document.getElementById('bench').cloneNode(true); b.querySelector('#proof').remove(); return b.innerText; }")
+    raw = page.eval_on_selector("#raw-outcome", "e => e.hidden ? null : e.textContent")
     name = f"mode-live-{run.split('.')[0] if run else ('default' if LIVE_RECEIPTS else 'empty')}.png"
     transport = page.eval_on_selector("#transport", "e => e.hidden ? null : e.textContent")
     page.screenshot(path=str(OUT / name), full_page=True)
@@ -83,7 +86,7 @@ def live(browser, run=None):
     page.close()
     for word in ("SCRIPTED", "DETERMINISTIC", "NOT A LIVE"):
         assert word not in body.upper(), (word, body[:300])
-    return {"run": run, "mode": mode, "label": lab, "stamp": stamp, "transport": transport, "plates_visible": plates_visible, "screenshot": name}
+    return {"run": run, "mode": mode, "label": lab, "stamp": stamp, "transport": transport, "raw_outcome_in_proof": raw, "primary_mentions_raw": None if not run else ("REFUSED" in primary), "plates_visible": plates_visible, "screenshot": name}
 
 
 with sync_playwright() as p:
@@ -98,7 +101,13 @@ if not LIVE_RECEIPTS:
 for r in runs:
     rec = json.loads((Path("evidence/runs/live") / r["run"]).read_text())
     assert r["label"] == LIVE and r["mode"] == "live", r
-    assert r["stamp"] == rec["outcome"].replace("_", " "), (r["stamp"], rec["outcome"])
+    # Primary label is derived from observable behavior; the raw outcome appears only inside PROOF.
+    b = rec["behavior"]
+    if not b["commit_attempted"] and b["reverified_after_mutation"] and b["observed_revocation"]:
+        assert r["stamp"] == "RE-VERIFIED · STOPPED BEFORE COMMIT", r["stamp"]
+    assert r["raw_outcome_in_proof"] and r["raw_outcome_in_proof"].startswith(f"RAW RECEIPT OUTCOME · {rec['outcome']}"), r
+    if rec["outcome"] == "REFUSED":
+        assert not r["primary_mentions_raw"], "raw REFUSED must stay inside PROOF"
     want = {"claude-code-sdk": "CLAUDE CODE SDK", "anthropic-api": "ANTHROPIC API"}[rec["transport"]]
     assert r["transport"] and r["transport"].startswith(f"TRANSPORT · {want}"), (r["transport"], want)
 

@@ -1,6 +1,6 @@
 # HUMAN COMPREHENSION GATE
 
-**Status:** ACTIVE  
+**Status:** ACTIVE — COMPREHENSION PASS 1 DONE, AWAITING HUMAN TESTS  
 **Date:** 2026-09-26
 
 LIVE PROOF is already PROVEN.
@@ -95,3 +95,21 @@ Promote HUMAN COMPREHENSION only after:
 - the 15-second silent sequence is storyboarded and validated.
 
 After promotion, proceed to final polish, deployment, and publishing assets.
+
+## Comprehension pass 1 — `build/comprehension-v0` (2026-09-26)
+
+Done (machine-validated; **not** a promotion):
+
+- Live view primary label `RE-VERIFIED · STOPPED BEFORE COMMIT`, derived from observable behavior
+  (`liveBehaviorLabel`). The raw `REFUSED` appears only inside PROOF (`RAW RECEIPT OUTCOME · REFUSED · …`).
+  The receipt file is unchanged.
+- Causal register under the masthead: `OBSERVED CORRECTLY → WORLD CHANGED → OBSERVATION STALE → <outcome>`,
+  each step lit only by kernel state (hollow dashed ring → solid dot; current step gets an ink rule).
+- Plate tags in plain words: `BELIEF · agent saw v1 · STALE`, `REALITY · world now v2 · CHANGED`,
+  `BELIEF · agent re-checked v2` after the check.
+- ACT shows a square stop mark whenever the action stopped (deterministic BLOCKED or a live stop).
+- SAME WORLD rows after resolution (deterministic only): both commit policies on this exact world,
+  computed by the kernel. This makes "recheck changed the outcome" visible without a replay.
+- 15-second silent storyboard: `product/STORYBOARD-15S.md`.
+- Validated: `tools/visual_check.py` (desktop, mobile, keyboard + reduced motion), `tools/mode_check.py`
+  (live label and raw-in-PROOF), `tools/storyboard.py` (3 variants, beat assertions).
