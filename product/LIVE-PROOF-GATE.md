@@ -1,6 +1,6 @@
 # LIVE PROOF GATE
 
-**Status:** ACTIVE — PREP  
+**Status:** ACTIVE — RUN READY  
 **Date:** 2026-09-26
 
 This gate governs the transition from the deterministic experience to real Claude Opus 5.5 execution.
@@ -128,10 +128,23 @@ This gate does not require:
 
 Those belong to later phases if justified.
 
+## Prep evidence — PROVEN
+
+The `build/live-proof-v0` preparation pass established:
+
+- sandbox-only four-tool adapter routed to the existing kernel;
+- automated static/runtime/adversarial isolation tests;
+- bounded live receipt writer;
+- deterministic vs LIVE MODEL mode identity and browser checks;
+- live receipt validation and kernel replay checks.
+
+The canonical mutation is injected only after a successful prepared action, preserving:
+
+`OBSERVE → PREPARE → WORLD CHANGES → ACT`
+
 ## Current blockers
 
-- sandbox tool adapter not yet implemented;
-- isolation tests not yet implemented;
-- live receipt writer not yet implemented;
-- explicit LIVE MODEL mode UI not yet implemented;
-- no real Opus 5.5 execution receipt yet.
+- no genuine Opus 5.5 execution receipt yet;
+- the first genuine receipt must be inspected against its world events and tool results before LIVE PROOF can be promoted.
+
+Human-comprehension testing remains active for the product, but is not a prerequisite for LIVE PROOF.
