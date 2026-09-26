@@ -2,7 +2,7 @@ project: THE-WORLD-CHANGED
 series: 30 Days of Real Business Problems
 day_number: TBD
 status: CONCEPT_LOCKED
-phase: HUMAN_COMPREHENSION
+phase: HUMAN_COMPREHENSION_TESTING
 updated: 2026-09-26
 
 premise: "A live AI agent sees the world correctly. You change the world before it acts."
@@ -28,7 +28,7 @@ gates:
   deterministic_replay: PROVEN
   reproducible_receipts: PROVEN_DETERMINISTIC
   interaction_prototype: PROVEN_FUNCTIONAL
-  human_comprehension: ACTIVE_PASS_1_MACHINE_VALIDATED_AWAITING_HUMAN_TESTS
+  human_comprehension: ACTIVE_PUBLIC_TEST_READY
   sandbox_tool_isolation: PROVEN
   live_mode_distinction: PROVEN
   live_receipt_pipeline: PROVEN_PREP
@@ -83,6 +83,18 @@ open_observations:
   - "Streamed SDK assistant frames carry stop_reason null; per-turn stop reasons are absent (final stop_reason end_turn is from the result message)."
   - "Outcome REFUSED comes from the final-text rule; a human should confirm the label (the model re-verified, saw REVOKED/INELIGIBLE, and stopped)."
 
+public_preview:
+  provider: CLOUDFLARE_PAGES
+  project: the-world-changed
+  url: https://the-world-changed.pages.dev/
+  deployed_commit: ea8a2672c17a9e2ba8f5067f4ccf483f2a343dbb
+  desktop_public_check: VERIFIED
+  proof_collapsed_first_load: VERIFIED
+  pull_the_gap_public: VERIFIED
+  admin_revoke_public: VERIFIED
+  mobile_public_check: NOT_INDEPENDENTLY_VERIFIED
+  guarded_terminal_public_check: INCONCLUSIVE_AUTOMATION_SERVICE_FAILURE
+
 comprehension_pass_1:
   branch: build/comprehension-v0
   live_primary_label: "RE-VERIFIED · STOPPED BEFORE COMMIT"
@@ -94,7 +106,7 @@ comprehension_pass_1:
 
 next:
   branch: build/comprehension-v0
-  objective: "Run first-impression tests with real first-time visitors (PROOF collapsed, no briefing) on the pass-1 hero and the 15s clip; prove they understand OBSERVE -> WORLD CHANGES -> STALE/REVERIFY -> OUTCOME without explanatory prose, then perform final visual and publishing refinement."
+  objective: "Run five first-impression tests with real first-time visitors on the public Cloudflare preview (PROOF collapsed, no briefing); score exact verbatim responses against the human-comprehension protocol; then PASS, PATCH, or FAIL before final polish."
 
 hard_exclusions:
   - DASHBOARD
