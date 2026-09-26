@@ -2,7 +2,7 @@ project: THE-WORLD-CHANGED
 series: 30 Days of Real Business Problems
 day_number: TBD
 status: CONCEPT_LOCKED
-phase: LIVE_PROOF_PROVEN
+phase: HUMAN_COMPREHENSION
 updated: 2026-09-26
 
 premise: "A live AI agent sees the world correctly. You change the world before it acts."
@@ -85,7 +85,7 @@ open_observations:
 
 next:
   branch: build/live-proof-v0
-  objective: "Proceed to human-comprehension validation and final visual/publishing refinement without changing the proven live receipt."
+  objective: "Prove that first-time visitors understand OBSERVE -> WORLD CHANGES -> STALE/REVERIFY -> OUTCOME without explanatory prose, then perform final visual and publishing refinement."
 
 hard_exclusions:
   - DASHBOARD
