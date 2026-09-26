@@ -8,6 +8,7 @@ This directory stores reproducible run receipts.
   - `authority-expired.B-guarded.json` — outcome `BLOCKED` (no effect)
   - `control.no-revoke-unguarded.json` — outcome `COMMITTED`
   - `control.no-revoke-guarded.json` — outcome `COMMITTED`
-- `live/` — observable real-model execution receipts (not yet; live integration is out of scope for kernel-v0).
+- `live/` — observable real Claude Opus 5.5 execution receipts, written only by `npm run live`
+  (`live/writer.ts` refuses test-double runs here and never overwrites). See `live/README.md`.
 
 Do not commit secrets, API keys, private chain-of-thought, or real customer data.

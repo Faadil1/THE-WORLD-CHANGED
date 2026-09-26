@@ -7,6 +7,6 @@ export default defineConfig({
   server: { host: true },
   test: {
     root: ".",
-    include: ["simulation/test/**/*.test.ts"],
+    include: ["simulation/test/**/*.test.ts", "live/test/**/*.test.ts", "experience/test/**/*.test.ts"],
   },
 } as Parameters<typeof defineConfig>[0]);

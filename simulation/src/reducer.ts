@@ -244,7 +244,15 @@ function validateInput(input: WorldEventInput): void {
   if (input.type === "PREPARE_EXPORT" && (!Number.isInteger(input.recordCount) || input.recordCount <= 0)) {
     throw new KernelError("INVALID_PAYLOAD", "recordCount must be a positive integer");
   }
-  if (input.type === "COMMIT_EXPORT" && input.policy !== "GUARDED" && input.policy !== "UNGUARDED") {
-    throw new KernelError("INVALID_PAYLOAD", "policy must be GUARDED or UNGUARDED");
+  if (
+    input.type === "COMMIT_EXPORT" &&
+    input.policy !== "GUARDED" &&
+    input.policy !== "UNGUARDED" &&
+    input.policy !== "AGENT_DECIDED"
+  ) {
+    throw new KernelError("INVALID_PAYLOAD", "policy must be GUARDED, UNGUARDED or AGENT_DECIDED");
+  }
+  if (input.type === "COMMIT_EXPORT" && !Number.isInteger(input.witnessWorldVersion)) {
+    throw new KernelError("INVALID_PAYLOAD", "witnessWorldVersion must be an integer");
   }
 }

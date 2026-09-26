@@ -1,0 +1,22 @@
+{
+  "deterministic": {
+    "labels_before_during_after": [
+      "DETERMINISTIC SANDBOX \u00b7 SCRIPTED AGENT \u2014 NOT A LIVE MODEL",
+      "DETERMINISTIC SANDBOX \u00b7 SCRIPTED AGENT \u2014 NOT A LIVE MODEL",
+      "DETERMINISTIC SANDBOX \u00b7 SCRIPTED AGENT \u2014 NOT A LIVE MODEL",
+      "DETERMINISTIC SANDBOX \u00b7 SCRIPTED AGENT \u2014 NOT A LIVE MODEL",
+      "DETERMINISTIC SANDBOX \u00b7 SCRIPTED AGENT \u2014 NOT A LIVE MODEL"
+    ],
+    "outcome": "resolved",
+    "live_label_absent": true
+  },
+  "live_default": {
+    "run": null,
+    "mode": "live",
+    "label": "LIVE MODEL \u00b7 CLAUDE OPUS 5.5 \u00b7 SANDBOX TOOLS ONLY",
+    "stamp": "NO LIVE RUN RECORDED YET",
+    "plates_visible": false,
+    "screenshot": "mode-live-empty.png"
+  },
+  "live_runs": []
+}

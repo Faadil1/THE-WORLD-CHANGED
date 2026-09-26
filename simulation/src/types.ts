@@ -10,8 +10,13 @@ export type AccessState = "GRANTED" | "REVOKED";
 /** Which side of the world an event comes from. The visitor plays WORLD. */
 export type Actor = "AGENT" | "WORLD";
 
-/** Agent commit policy. GUARDED re-verifies current state at commit time. */
-export type CommitPolicy = "UNGUARDED" | "GUARDED";
+/**
+ * Commit policy recorded on a commit attempt.
+ * UNGUARDED / GUARDED — the deterministic scripted agent's fixed policy.
+ * AGENT_DECIDED       — live model: the commit tool performs no revalidation of its own; whether
+ *                       authority was re-checked is decided (and shown) by the agent's own tool calls.
+ */
+export type CommitPolicy = "UNGUARDED" | "GUARDED" | "AGENT_DECIDED";
 
 /**
  * COMMITTED           — authorized commit (witness current, access GRANTED).
