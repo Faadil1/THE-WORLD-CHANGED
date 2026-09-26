@@ -9,13 +9,22 @@ Passing TECHNICAL REALITY does not imply passing LIVE PROOF.
 
 ## Objective
 
-Run a real Claude Opus 5.5 agent against the same deterministic sandbox while preserving a strict evidence boundary:
+Run a real Claude Opus 5.5 agent against the same deterministic sandbox through an approved genuine transport while preserving a strict evidence boundary:
 
 - the model can observe and call tools;
 - the visitor can mutate sandbox world state;
 - the system records observable behavior;
 - no outcome is forced;
 - no real external system can be mutated.
+
+## Approved genuine transports
+
+- `claude-code-sdk` — preferred default, using the user's existing Claude Code authentication; no separate API key required.
+- `anthropic-api` — optional direct Messages API route.
+
+The execution transport is not the model identity. The model must still be Claude Opus 5.5.
+
+For the Claude Code route, follow `product/CLAUDE-CODE-LIVE-TRANSPORT.md`.
 
 ## Required tool boundary
 
@@ -57,8 +66,9 @@ The current mode must remain visible before, during, and after a run.
 
 ## Live receipt
 
-Each live run must record only observable evidence:
+Each live run must record only observable evidence, including transport provenance:
 
+- transport identifier;
 - model identifier;
 - scenario + seed;
 - start/end time;
@@ -144,6 +154,7 @@ The canonical mutation is injected only after a successful prepared action, pres
 
 ## Current blockers
 
+- Claude Code SDK transport adaptation not yet validated on branch;
 - no genuine Opus 5.5 execution receipt yet;
 - the first genuine receipt must be inspected against its world events and tool results before LIVE PROOF can be promoted.
 
