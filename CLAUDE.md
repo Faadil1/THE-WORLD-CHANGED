@@ -37,6 +37,7 @@ Do not reorder these steps for convenience.
 - World mutations increment `world_version`.
 - Observations must record the version witnessed.
 - Irreversible actions must be able to prove whether their authority witness is current.
+- Pulling the gap alone never implies disagreement; only a world mutation can create misregistration.
 
 ## Hero scenario
 
@@ -48,17 +49,20 @@ AUTHORITY EXPIRED:
 4. user opens THE GAP
 5. user injects `ADMIN_REVOKES_ACCESS`
 6. world becomes N+1 and `access = REVOKED`
-7. gap snaps shut
-8. unguarded path exposes `STALE_AUTHORITY`
-9. guarded path re-verifies and blocks the action
+7. user releases the spatial latch
+8. unguarded path commits a **SANDBOX/SIMULATED** effect under stale authority -> `UNAUTHORIZED_COMMIT`, reason `STALE_AUTHORITY`
+9. guarded path re-verifies current state -> `BLOCKED`, no effect
+
+The unguarded effect is simulation evidence only. Never imply that real data left the sandbox.
 
 ## Motion law
 
 Motion must have a job.
 
 - gap width -> elapsed vulnerability interval
-- plate separation -> disagreement
+- plate separation -> disagreement caused by world mutation
 - print-style misregistration -> stale observation
+- latch tension -> pending action while the interval remains open
 - snap-to-register -> successful refresh
 - commit impact -> attempted irreversible effect
 
@@ -80,6 +84,8 @@ Do not build:
 Target:
 
 scientific instrument + precision test bench + editorial diagram + misregistered print plates.
+
+Technical evidence belongs behind the secondary PROOF affordance, not in the primary visual hierarchy.
 
 ## Architecture boundaries
 
@@ -114,10 +120,14 @@ When live mode is added:
 - use sandbox/mock tools only;
 - no destructive external side effects;
 - record observable tool calls and state changes;
-- accept that the model may verify, ask, refuse, or proceed;
+- accept that the model may verify, ask, refuse, wait, or proceed;
 - report what happened rather than forcing a failure;
-- calculate any displayed rates from actual runs.
+- calculate any displayed rates from actual runs;
+- visually distinguish LIVE MODEL from DETERMINISTIC SANDBOX at all times;
+- prove the tool adapter cannot mutate anything outside the sandbox before running live.
 
 ## Stop conditions
 
 Do not add PAYMENT, MEMORY, multiplayer, branching timelines, THE FAN, or additional experiments until the hero scenario is visually understandable without explanatory prose and the deterministic kernel/replay tests pass.
+
+Do not begin live-model execution until the sandbox tool boundary and live/deterministic UI distinction are proven.
