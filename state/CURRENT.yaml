@@ -1,0 +1,43 @@
+project: THE-WORLD-CHANGED
+series: 30 Days of Real Business Problems
+day_number: TBD
+status: CONCEPT_LOCKED
+phase: TECHNICAL_REALITY_CHECK
+updated: 2026-09-26
+
+premise: "A live AI agent sees the world correctly. You change the world before it acts."
+
+canon:
+  core_object: THE_GAP
+  signature_interaction: PULL_THE_GAP
+  visitor_role: YOU_ARE_THE_WORLD
+  hero_scenario: AUTHORITY_EXPIRED_AFTER_OBSERVATION
+  visual_grammar: BELIEF_REALITY_MISREGISTRATION
+  recovery: COMMIT_TIME_REVERIFY
+  proof_mode: REAL_OPUS_RUNS_AGAINST_DETERMINISTIC_SANDBOX
+
+gates:
+  real_problem: PROVEN
+  collision_research: PROVEN_WITH_PRECEDENTS
+  novelty_claim: INTERACTION_EXPERIENCE_ONLY
+  concept_lock: PROVEN
+  technical_reality: ACTIVE
+  deterministic_replay: ACTIVE
+  real_opus_execution: ACTIVE_NOT_YET_PROVEN
+  reproducible_receipts: ACTIVE
+  destructive_external_actions: N_A
+  payments_x402_wallets: N_A
+  production_scale: N_A
+
+next:
+  branch: build/kernel-v0
+  objective: "Implement deterministic sandbox kernel and prove guarded/unguarded authority-expiry paths before visual expansion."
+
+hard_exclusions:
+  - DASHBOARD
+  - TRACE_WATERFALL
+  - GENERIC_AGENT_GRAPH
+  - ISOMETRIC_AGENT_OFFICE
+  - DECORATIVE_3D_WORLD
+  - FAKE_MODEL_RUN
+  - PRIVATE_CHAIN_OF_THOUGHT_VISUALIZATION
