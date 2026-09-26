@@ -48,8 +48,13 @@ export type MessagesResponse = {
   usage?: { input_tokens?: number; output_tokens?: number };
 };
 
+/** Genuine transports reach a real model; a test double never does. Receipts carry this verbatim. */
+export const GENUINE_TRANSPORTS = ["anthropic-api", "claude-code-sdk"] as const;
+export type GenuineTransport = (typeof GENUINE_TRANSPORTS)[number];
+export type TransportKind = GenuineTransport | "test-double";
+
 export interface ModelTransport {
-  /** "anthropic-api" for the real API; "test-double" for tests. Receipts carry this verbatim. */
+  /** "anthropic-api" for the real API; "test-double" for tests. */
   readonly kind: "anthropic-api" | "test-double";
   create(req: MessagesRequest): Promise<MessagesResponse>;
 }
@@ -90,7 +95,7 @@ export type ObservableToolResult = {
 };
 
 export type LoopResult = {
-  transport: ModelTransport["kind"];
+  transport: TransportKind;
   model_requested: string;
   task_prompt: string;
   turns: AssistantTurn[];
@@ -98,10 +103,49 @@ export type LoopResult = {
   tool_results: ObservableToolResult[];
   injected_at_tick: number | null;
   injected_after_tool_index: number | null;
-  terminated_by: "END_TURN" | "MAX_TURNS" | "STOP_REASON" | "RUN_ERROR";
+  terminated_by: "END_TURN" | "MAX_TURNS" | "STOP_REASON" | "RUN_ERROR" | "INIT_TOOLSET_INVALID";
   final_stop_reason: string | null;
   run_error: string | null;
   session: SandboxSession;
+  /** Claude Code SDK evidence (init block, result, denials). null for the direct API route. */
+  claude_code: ClaudeCodeEvidence | null;
+};
+
+/** Observable Claude Code SDK evidence. Never contains thinking content or credentials. */
+export type ClaudeCodeEvidence = {
+  /** Pre-prompt gate: read over the SDK control channel before the task is released (no model call). */
+  preflight: { mcp_servers: Array<{ name: string; status: string; source: string | null; tools: string[] }>; agents: string[] } | null;
+  init: {
+    session_id: string;
+    model: string;
+    tools: string[];
+    mcp_servers: Array<{ name: string; status: string; source: string | null }>;
+    agents: string[];
+    skills: string[];
+    plugins: string[];
+    slash_command_count: number;
+    permission_mode: string;
+    api_key_source: string;
+    claude_code_version: string;
+  } | null;
+  /** init.tools equals exactly the four mcp__twc__ tools. */
+  init_tool_set_exact: boolean;
+  /** Every tool_use block the model emitted, in stream order. */
+  tool_uses: Array<{ tool_use_id: string; name: string; routed_to_sandbox: boolean }>;
+  /** tool_use blocks naming anything other than the four mcp__twc__ tools. */
+  non_twc_tool_attempts: Array<{ tool_use_id: string; name: string }>;
+  permission_denials: Array<{ tool_use_id: string; tool_name: string }>;
+  result: {
+    subtype: string;
+    is_error: boolean;
+    num_turns: number | null;
+    stop_reason: string | null;
+    duration_ms: number | null;
+    total_cost_usd: number | null;
+    errors: string[];
+  } | null;
+  /** Count of SDK stream messages by type/subtype (contents of non-evidence messages are not kept). */
+  message_counts: Record<string, number>;
 };
 
 const REASONING_TYPES = new Set(["thinking", "redacted_thinking"]);
@@ -122,6 +166,7 @@ export async function runAgentLoop(transport: ModelTransport, session: SandboxSe
     final_stop_reason: null,
     run_error: null,
     session,
+    claude_code: null,
   };
 
   for (let turn = 0; turn < LIVE_MAX_TURNS; turn++) {
@@ -197,6 +242,6 @@ export async function runAgentLoop(transport: ModelTransport, session: SandboxSe
   return out;
 }
 
-function redact(s: string): string {
+export function redact(s: string): string {
   return s.replace(/sk-ant-[A-Za-z0-9_\-]+/g, "sk-ant-[REDACTED]").slice(0, 500);
 }

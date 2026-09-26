@@ -32,7 +32,7 @@ describe("live receipt: schema + observable evidence", () => {
   it("tool results, state diffs and kernel replay are mutually consistent", async () => {
     const r = await run(scriptCommitOnFirstWitness());
     expect(r.tool_results.map((t) => t.name)).toEqual(r.observable_tool_calls.map((c) => c.name));
-    expect(r.state_diffs.map((d) => d.cause)).toEqual(["tool:observe_access", "world:ADMIN_REVOKES_ACCESS", "tool:prepare_export", "tool:commit_export"]);
+    expect(r.state_diffs.map((d) => d.cause)).toEqual(["tool:observe_access", "tool:prepare_export", "world:ADMIN_REVOKES_ACCESS", "tool:commit_export"]);
     expect(r.kernel_replay.ok).toBe(true);
   });
 });

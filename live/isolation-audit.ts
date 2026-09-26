@@ -11,7 +11,9 @@ export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 /** Code reachable by a live model: the tool adapter and everything it imports. */
 export const MODEL_REACHABLE_ENTRY = "live/tools.ts";
 /** Code on the model request path (loop + receipt). Must also be free of I/O. */
-export const MODEL_PATH_ENTRIES = ["live/tools.ts", "live/agent-loop.ts", "live/receipt.ts"];
+export const MODEL_PATH_ENTRIES = ["live/tools.ts", "live/agent-loop.ts", "live/claude-code-loop.ts", "live/receipt.ts"];
+/** Modules allowed on the model path besides simulation/src. The SDK/API transports are deliberately absent. */
+export const MODEL_PATH_ALLOWED = ["live/tools.ts", "live/diff.ts", "live/agent-loop.ts", "live/claude-code-loop.ts", "live/receipt.ts"];
 
 /** Patterns that would give tool code network, process, filesystem, or dynamic-code capability. */
 export const FORBIDDEN_CAPABILITIES: Array<[RegExp, string]> = [
@@ -68,7 +70,7 @@ export function auditCapabilities(files: string[]): AuditFinding[] {
 /** Preflight used by the live runner: the model path must audit clean. */
 export function preflightIsolation(): { ok: boolean; graph: string[]; findings: AuditFinding[] } {
   const graph = importGraph(MODEL_PATH_ENTRIES);
-  const outside = graph.filter((f) => !f.startsWith("simulation/src/") && !["live/tools.ts", "live/diff.ts", "live/agent-loop.ts", "live/receipt.ts"].includes(f));
+  const outside = graph.filter((f) => !f.startsWith("simulation/src/") && !MODEL_PATH_ALLOWED.includes(f));
   const findings = auditCapabilities(graph);
   for (const f of outside) findings.push({ file: f, capability: "module outside sandbox boundary", excerpt: f });
   return { ok: findings.length === 0, graph, findings };

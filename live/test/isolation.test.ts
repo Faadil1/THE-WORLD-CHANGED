@@ -258,7 +258,7 @@ describe("4. receipt writing is confined to the bounded live-receipt directory",
     const loop = await runAgentLoop(scriptCommitOnFirstWitness(), new SandboxSession("iso-w"));
     const r = buildLiveReceipt(loop, new Date(0), new Date(1));
     const before = existsSync(LIVE_RECEIPT_DIR) ? readdirSync(LIVE_RECEIPT_DIR).length : 0;
-    expect(() => writeLiveReceipt(r)).toThrow(/only real anthropic-api runs/);
+    expect(() => writeLiveReceipt(r)).toThrow(/only genuine transport runs/);
     expect(existsSync(LIVE_RECEIPT_DIR) ? readdirSync(LIVE_RECEIPT_DIR).length : 0).toBe(before);
   });
 

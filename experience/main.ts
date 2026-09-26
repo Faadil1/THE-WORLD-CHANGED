@@ -15,7 +15,7 @@ import {
   type WorldState,
 } from "../simulation/src";
 import type { LiveReceipt } from "../live/receipt";
-import { deterministicIdentity, liveIdentity, type ModeIdentity } from "./mode";
+import { deterministicIdentity, liveIdentity, transportLabel, type ModeIdentity } from "./mode";
 
 const params = new URLSearchParams(location.search);
 const SEED = params.get("seed") || "twc-hero-0001";
@@ -443,6 +443,9 @@ function renderLive(id: ModeIdentity): void {
     return;
   }
   draw(liveSnapshot(r));
+  const transport = $("transport");
+  transport.textContent = `TRANSPORT · ${transportLabel(r.transport)}` + (r.claude_code_sdk?.init ? ` · session ${r.claude_code_sdk.init.session_id} · init model ${r.claude_code_sdk.init.model} · tools ${r.claude_code_sdk.init.tools.join(", ")}` : "");
+  transport.hidden = false;
   const bh = r.behavior;
   $("stamp").textContent = r.outcome.replaceAll("_", " ");
   $("sim").hidden = r.final_state.committed_effects.length === 0;

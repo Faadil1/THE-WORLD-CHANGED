@@ -289,6 +289,8 @@ code { font-family: var(--mono); }
 .proof summary::before { content: "+"; width: 1ch; }
 .proof[open] summary::before { content: "−"; }
 .proof__hint { font-weight: 400; letter-spacing: 0.04em; color: var(--ink-2); }
+.proof__transport { margin: 0 0 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-2); overflow-wrap: anywhere; }
+.proof__transport[hidden] { display: none; }
 .proof .ledger { margin-top: 0; border-top: 2px solid var(--ink); }
 .proof #receipt { display: inline-block; margin-top: 8px; }
 .proof #receipt[hidden] { display: none; }

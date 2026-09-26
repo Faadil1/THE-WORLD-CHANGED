@@ -1,12 +1,14 @@
 /**
  * Live receipt writer. The ONLY filesystem-writing code in the live path.
  * Writes are confined to a single bounded directory; no overwrite; no path traversal;
- * test-double runs can never land in evidence/runs/live.
+ * test-double runs can never land in evidence/runs/live; only genuine transports
+ * (anthropic-api, claude-code-sdk) can. Invalid runs are still preserved, marked live_proof.valid=false.
  */
 import { closeSync, lstatSync, mkdirSync, openSync, writeSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateLiveReceipt, type LiveReceipt } from "./receipt";
+import { GENUINE_TRANSPORTS } from "./agent-loop";
+import { liveProofFailures, validateLiveReceipt, type LiveReceipt } from "./receipt";
 
 export const LIVE_RECEIPT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..", "evidence", "runs", "live");
 
@@ -33,8 +35,13 @@ export function writeLiveReceipt(receipt: LiveReceipt, baseDir: string = LIVE_RE
   const v = validateLiveReceipt(receipt);
   if (!v.ok) throw new Error(`invalid live receipt: ${v.reason}`);
   const base = resolve(baseDir);
-  if (base === LIVE_RECEIPT_DIR && receipt.transport !== "anthropic-api") {
-    throw new Error("refused: only real anthropic-api runs may be written to evidence/runs/live");
+  if (base === LIVE_RECEIPT_DIR && !(GENUINE_TRANSPORTS as readonly string[]).includes(receipt.transport)) {
+    throw new Error(`refused: only genuine transport runs (${GENUINE_TRANSPORTS.join(", ")}) may be written to evidence/runs/live`);
+  }
+  // The recorded validity must match an independent recomputation (no hand-edited verdicts).
+  const failures = liveProofFailures(receipt);
+  if (!receipt.live_proof || receipt.live_proof.valid !== (failures.length === 0)) {
+    throw new Error("refused: recorded live_proof validity does not match recomputation");
   }
   mkdirSync(base, { recursive: true });
   if (lstatSync(base).isSymbolicLink()) throw new Error("refused: receipt directory is a symlink");
