@@ -2,7 +2,7 @@ project: THE-WORLD-CHANGED
 series: 30 Days of Real Business Problems
 day_number: TBD
 status: CONCEPT_LOCKED
-phase: LIVE_PROOF_PREP
+phase: LIVE_PROOF_RUN_READY
 updated: 2026-09-26
 
 premise: "A live AI agent sees the world correctly. You change the world before it acts."
@@ -28,8 +28,10 @@ gates:
   reproducible_receipts: PROVEN_DETERMINISTIC
   interaction_prototype: PROVEN_FUNCTIONAL
   human_comprehension: ACTIVE_NOT_YET_PROVEN
-  sandbox_tool_isolation: ACTIVE_NOT_YET_PROVEN
-  live_mode_distinction: ACTIVE_NOT_YET_PROVEN
+  sandbox_tool_isolation: PROVEN
+  live_mode_distinction: PROVEN
+  live_receipt_pipeline: PROVEN_PREP
+  live_run_human_inspection: ACTIVE_NOT_YET_PROVEN
   real_opus_execution: ACTIVE_NOT_YET_PROVEN
   destructive_external_actions: N_A
   payments_x402_wallets: N_A
@@ -50,7 +52,7 @@ technical_reality_receipt:
 
 next:
   branch: build/live-proof-v0
-  objective: "Prove sandbox tool isolation, add explicit LIVE MODEL vs DETERMINISTIC SANDBOX distinction, then connect Claude Opus 5.5 without forcing an outcome."
+  objective: "Run one genuine Claude Opus 5.5 execution against the proven sandbox, preserve the actual receipt, and inspect it before promoting LIVE PROOF."
 
 hard_exclusions:
   - DASHBOARD
