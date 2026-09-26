@@ -10,10 +10,9 @@
     <main class="bench" id="bench" data-phase="CLOSED" data-policy="UNGUARDED" data-misregistered="false">
       <header class="masthead">
         <h1 class="title">THE WORLD CHANGED</h1>
-        <p class="mode">
-          <span class="mode__chip">DETERMINISTIC SANDBOX</span>
-          <span>scripted agent — not a live model</span>
-          <span class="mode__seed">seed <code id="seed"></code></span>
+        <p class="mode" aria-live="polite">
+          <span class="mode__chip" id="mode-label"></span>
+          <span class="mode__sub" id="mode-sub"></span>
         </p>
       </header>
 
@@ -103,6 +102,7 @@
 
       <details class="proof" id="proof">
         <summary>PROOF <span class="proof__hint">tool calls · world versions · receipt</span></summary>
+        <p class="proof__transport" id="transport" hidden></p>
         <ol class="ledger" id="ledger" aria-label="Observable event ledger"></ol>
         <a class="link" id="receipt" download hidden>RECEIPT.JSON</a>
       </details>

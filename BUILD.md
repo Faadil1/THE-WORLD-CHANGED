@@ -12,6 +12,9 @@ npm run receipts       # regenerate evidence/runs/deterministic/*.json (tests fa
 npm run dev            # PULL THE GAP hero at http://localhost:5173
 npm run build && npx vite preview --port 4173 &
 npm run verify:visual  # headless Chromium, real pointer/touch/keyboard gestures -> evidence/screenshots/kernel-v0/
+npm run verify:mode    # browser check of DETERMINISTIC vs LIVE labels -> evidence/screenshots/live-proof-v0/
+npm run test:isolation # live sandbox isolation suite
+npm run live -- [seed] # gated genuine Opus 5.5 run (needs ANTHROPIC_API_KEY) -> evidence/runs/live/
 ```
 
 ## Layout
@@ -29,6 +32,8 @@ experience/            PULL THE GAP hero (vanilla TS + CSS, no framework)
   controller.ts        gestures -> kernel inputs; no DOM, no outcome logic
   main.ts              renderer + pointer/touch/keyboard gestures
 tools/visual_check.py  gesture-driven visual verification
+tools/mode_check.py    mode-identity verification (deterministic vs live)
+live/                  sandbox-only live model path — see live/README.md
 ```
 
 ## Kernel semantics (decisions made inside canon)

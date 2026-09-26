@@ -4,7 +4,18 @@
  * It never decides outcomes; it only converts gestures into kernel inputs via the controller.
  */
 import { HeroController, MAX_GAP_TICKS, PREPARE_TICK, type HeroSnapshot } from "./controller";
-import { belief, type WorldEvent, type WorldState } from "../simulation/src";
+import {
+  belief,
+  createWorld,
+  inputFromReceiptEvent,
+  isMisregistered,
+  outcomeOf,
+  reduce,
+  type WorldEvent,
+  type WorldState,
+} from "../simulation/src";
+import type { LiveReceipt } from "../live/receipt";
+import { deterministicIdentity, liveIdentity, transportLabel, type ModeIdentity } from "./mode";
 
 const params = new URLSearchParams(location.search);
 const SEED = params.get("seed") || "twc-hero-0001";
@@ -20,7 +31,19 @@ const latch = $<HTMLButtonElement>("latch");
 const replayOther = $<HTMLButtonElement>("replay-other");
 const resetBtn = $<HTMLButtonElement>("reset");
 const receiptLink = $<HTMLAnchorElement>("receipt");
-$("seed").textContent = SEED;
+
+// ---------- mode identity: decided once at boot, visible before/during/after ----------
+const LIVE_RECEIPTS = import.meta.glob("../evidence/runs/live/*.json", { eager: true, import: "default" }) as Record<string, unknown>;
+function pickLiveReceipt(): unknown | null {
+  const names = Object.keys(LIVE_RECEIPTS).sort();
+  const want = params.get("run");
+  const key = want ? names.find((n) => n.endsWith(`/${want}`)) : names.at(-1);
+  return key ? LIVE_RECEIPTS[key]! : null;
+}
+const identity: ModeIdentity = params.get("mode") === "live" ? liveIdentity(pickLiveReceipt()) : deterministicIdentity(SEED);
+bench.dataset.mode = identity.mode;
+$("mode-label").textContent = identity.label;
+$("mode-sub").textContent = identity.sub;
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const wait = (ms: number) => new Promise((r) => setTimeout(r, reducedMotion.matches ? Math.min(ms, 140) : ms));
@@ -50,7 +73,13 @@ function insideInterval(x: number, y: number): boolean {
 // ---------- render ----------
 const fmt = (n: number) => n.toLocaleString("en-US");
 
+/** Deterministic renders come only from the scripted controller, and only in deterministic mode. */
 function render(s: HeroSnapshot): void {
+  if (identity.mode !== "deterministic") return;
+  draw(s);
+}
+
+function draw(s: HeroSnapshot): void {
   const w = s.world;
   bench.dataset.phase = s.phase;
   bench.dataset.policy = s.policy;
@@ -120,8 +149,8 @@ function render(s: HeroSnapshot): void {
   // Verdict
   const receiptReady = s.phase === "RESOLVED";
   receiptLink.hidden = !receiptReady;
-  if (receiptReady) {
-    const a = w.actionAttempts.at(-1)!;
+  const a = w.actionAttempts.at(-1);
+  if (receiptReady && a) {
     const effect = w.committedEffects.find((e) => e.id === a.effectId);
     $("stamp").textContent = a.result.replace("_", " ");
     $("sim").hidden = !effect;
@@ -376,13 +405,74 @@ function nextFrame(): Promise<void> {
   return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
 }
 
+// ---------- live mode: render a recorded genuine run (read-only) ----------
+function liveSnapshot(r: LiveReceipt): HeroSnapshot {
+  const events = r.world_events.slice().sort((x, y) => x.seq - y.seq);
+  const world = reduce(createWorld(r.seed), events.map(inputFromReceiptEvent)); // kernel, not a re-implementation
+  const maxTick = Math.max(0, ...events.map((e) => e.tick));
+  const gapTicks = Math.min(MAX_GAP_TICKS, Math.max(2, maxTick - PREPARE_TICK));
+  const commitTick = PREPARE_TICK + gapTicks;
+  const revoke = events.find((e) => e.type === "ADMIN_REVOKES_ACCESS");
+  const b = belief(world);
+  return {
+    seed: r.seed,
+    phase: "RESOLVED",
+    policy: "AGENT_DECIDED",
+    gapTicks,
+    commitTick,
+    armedTick: null,
+    revokeTick: revoke ? Math.min(Math.max(revoke.tick, PREPARE_TICK + 1), commitTick - 1) : null,
+    world,
+    beliefVersion: b?.witnessedWorldVersion ?? null,
+    beliefAccess: b?.accessState ?? null,
+    misregistered: isMisregistered(world),
+    outcome: outcomeOf(world),
+    lastEvent: world.eventLog.at(-1) ?? null,
+  };
+}
+
+function renderLive(id: ModeIdentity): void {
+  const r = id.mode === "live" ? id.receipt : null;
+  bench.dataset.liveEmpty = String(!r);
+  if (!r) {
+    bench.dataset.phase = "RESOLVED";
+    $("stamp").textContent = id.mode === "live" ? "NO LIVE RUN RECORDED YET" : "NOT SHOWN AS LIVE";
+    $("why").textContent = id.mode === "live" ? "Nothing to show. A live run is recorded by the sandbox runner, never simulated here." : id.sub;
+    $("sim").hidden = true;
+    receiptLink.hidden = true;
+    return;
+  }
+  draw(liveSnapshot(r));
+  const transport = $("transport");
+  transport.textContent = `TRANSPORT · ${transportLabel(r.transport)}` + (r.claude_code_sdk?.init ? ` · session ${r.claude_code_sdk.init.session_id} · init model ${r.claude_code_sdk.init.model} · tools ${r.claude_code_sdk.init.tools.join(", ")}` : "");
+  transport.hidden = false;
+  const bh = r.behavior;
+  $("stamp").textContent = r.outcome.replaceAll("_", " ");
+  $("sim").hidden = r.final_state.committed_effects.length === 0;
+  $("why").textContent =
+    `Observed ${bh.first_observation?.access ?? "—"} at v${bh.first_observation?.world_version ?? "—"}. ` +
+    `World changed at v${bh.revocation_world_version ?? "—"}. ` +
+    `Tool calls: ${bh.tool_sequence.join(" → ") || "none"}. ` +
+    `Re-verified on its own: ${bh.reverified_after_mutation ? "yes" : "no"}.` +
+    (r.requires_human_review ? " Outcome from final message text — needs human review." : "");
+  const blob = new Blob([JSON.stringify(r, null, 2)], { type: "application/json" });
+  receiptLink.href = URL.createObjectURL(blob);
+  receiptLink.download = `live-receipt.${r.seed}.json`;
+  receiptLink.hidden = false;
+}
+
 // ---------- boot ----------
 measure();
-ctl.subscribe(render);
+if (identity.mode === "deterministic") {
+  ctl.subscribe(render);
+} else {
+  renderLive(identity);
+}
 addEventListener("resize", () => {
   measure();
-  render(ctl.snapshot());
+  if (identity.mode === "deterministic") render(ctl.snapshot());
+  else renderLive(identity);
 });
 
 // Test hook for automated visual verification (read-only).
-(window as unknown as { __twc: unknown }).__twc = { ctl };
+(window as unknown as { __twc: unknown }).__twc = { ctl, identity };
