@@ -2,7 +2,7 @@ project: THE-WORLD-CHANGED
 series: 30 Days of Real Business Problems
 day_number: TBD
 status: CONCEPT_LOCKED
-phase: LIVE_PROOF_FIRST_RUN_RECORDED
+phase: LIVE_PROOF_PROVEN
 updated: 2026-09-26
 
 premise: "A live AI agent sees the world correctly. You change the world before it acts."
@@ -33,8 +33,9 @@ gates:
   live_mode_distinction: PROVEN
   live_receipt_pipeline: PROVEN_PREP
   claude_code_transport: PROVEN_ONE_RUN
-  live_run_human_inspection: ACTIVE_NOT_YET_PROVEN
-  real_opus_execution: RECORDED_AWAITING_HUMAN_INSPECTION
+  live_run_human_inspection: PROVEN
+  real_opus_execution: PROVEN
+  live_proof: PROVEN
   destructive_external_actions: N_A
   payments_x402_wallets: N_A
   production_scale: N_A
@@ -68,7 +69,7 @@ first_live_run:
   reverified_after_mutation: true
   commit_attempted: false
   outcome: REFUSED
-  outcome_basis: "text rule (no commit; final message declines) — requires_human_review: true"
+  outcome_basis: "raw receipt label REFUSED from text rule; human-reviewed semantic interpretation: REVERIFIED_AND_STOPPED"
   permission_denials: 0
   non_twc_tool_attempts: 0
   kernel_replay: {ok: true, replay_hash: 5b7a6495}
@@ -84,7 +85,7 @@ open_observations:
 
 next:
   branch: build/live-proof-v0
-  objective: "Human inspection of the first genuine receipt against init model/tool set, world events, tool calls/results, state diffs, attempts and outcome; decide on the open observations; then promote LIVE_PROOF if accepted."
+  objective: "Proceed to human-comprehension validation and final visual/publishing refinement without changing the proven live receipt."
 
 hard_exclusions:
   - DASHBOARD
