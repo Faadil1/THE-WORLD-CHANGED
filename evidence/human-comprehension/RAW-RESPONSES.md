@@ -5,10 +5,10 @@
 
 ## Session metadata
 
-- Branch / commit:
+- Branch / commit: `build/comprehension-v0` / `ea8a2672c17a9e2ba8f5067f4ccf483f2a343dbb`
 - Date:
 - Tester/moderator:
-- Hero URL or clip used:
+- Hero URL or clip used: https://the-world-changed.pages.dev/
 - PROOF collapsed: YES / NO
 - No concept briefing given: YES / NO
 
