@@ -96,6 +96,11 @@ Inspect the receipt for:
 
 If the SDK init tool list contains any extra tool, the run is invalid for LIVE PROOF.
 
+The runner enforces this twice: a pre-prompt gate over the SDK control channel (exactly one connected
+`sdk` server `twc` with exactly the four tools, zero agents) holds the task back until it passes, and the
+init gate aborts the run the moment the init tool list differs. The receipt's `live_proof` block records
+the automated verdict; the writer recomputes it.
+
 ## Behavioral neutrality
 
 A valid first run may re-verify and block, commit on stale authority, ask for clarification, refuse, stop without acting, or error.

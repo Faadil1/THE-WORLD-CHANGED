@@ -76,13 +76,14 @@ def live(browser, run=None):
     body = page.inner_text("body")
     mode = page.eval_on_selector("#bench", "e => e.dataset.mode")
     stamp = page.inner_text("#stamp")
-    name = f"mode-live-{run.split('.')[0] if run else 'empty'}.png"
+    name = f"mode-live-{run.split('.')[0] if run else ('default' if LIVE_RECEIPTS else 'empty')}.png"
+    transport = page.eval_on_selector("#transport", "e => e.hidden ? null : e.textContent")
     page.screenshot(path=str(OUT / name), full_page=True)
     plates_visible = page.locator(".plates").is_visible()
     page.close()
     for word in ("SCRIPTED", "DETERMINISTIC", "NOT A LIVE"):
         assert word not in body.upper(), (word, body[:300])
-    return {"run": run, "mode": mode, "label": lab, "stamp": stamp, "plates_visible": plates_visible, "screenshot": name}
+    return {"run": run, "mode": mode, "label": lab, "stamp": stamp, "transport": transport, "plates_visible": plates_visible, "screenshot": name}
 
 
 with sync_playwright() as p:
@@ -98,6 +99,8 @@ for r in runs:
     rec = json.loads((Path("evidence/runs/live") / r["run"]).read_text())
     assert r["label"] == LIVE and r["mode"] == "live", r
     assert r["stamp"] == rec["outcome"].replace("_", " "), (r["stamp"], rec["outcome"])
+    want = {"claude-code-sdk": "CLAUDE CODE SDK", "anthropic-api": "ANTHROPIC API"}[rec["transport"]]
+    assert r["transport"] and r["transport"].startswith(f"TRANSPORT · {want}"), (r["transport"], want)
 
 summary = {"deterministic": det, "live_default": empty, "live_runs": runs}
 (OUT / "mode-check.json").write_text(json.dumps(summary, indent=2) + "\n")
