@@ -87,8 +87,8 @@ public_preview:
   provider: CLOUDFLARE_PAGES
   project: the-world-changed
   url: https://the-world-changed.pages.dev/
-  deployed_commit: ea8a2672c17a9e2ba8f5067f4ccf483f2a343dbb
-  desktop_public_check: VERIFIED
+  deployed_commit: dbcd1b99b9ad4a546498c14d45181195d46bf1e3
+  desktop_public_check: VERIFIED_VISUAL_PASS_2
   proof_collapsed_first_load: VERIFIED
   pull_the_gap_public: VERIFIED
   admin_revoke_public: VERIFIED
@@ -104,7 +104,7 @@ visual_pass_2:
   storyboard_evidence: evidence/storyboard/visual-pass-2/
   kernel_changed: false
   live_receipt_changed: false
-  public_preview_note: "public_preview above records pass-1 commit ea8a267; re-verify and record the new deployed SHA before any participant sees pass 2"
+  public_preview_note: "Cloudflare production re-verified on visual pass 2 commit dbcd1b99; participant testing must use this deployed visual pass."
 
 comprehension_pass_1:
   branch: build/comprehension-v0
