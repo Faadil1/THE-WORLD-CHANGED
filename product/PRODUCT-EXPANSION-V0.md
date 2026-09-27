@@ -1,6 +1,6 @@
 # PRODUCT EXPANSION V0 — THE WORLD CHANGED LAB
 
-**Gate:** `PRODUCT_EXPANSION_V0` · **State:** `MACHINE_VALIDATED` (not PROVEN)
+**Gate:** `PRODUCT_EXPANSION_V0` · **State:** `PREVIEW_READY_POLISH_1` (not PROVEN)
 **Branch:** `build/agent-lab-v0` (from `build/comprehension-v0` @ `dab1878`) · production stimulus untouched
 
 ## North Star
@@ -43,7 +43,7 @@ reasoning anywhere, no fake live run, no external effect (everything `realm: SAN
 
 ## Gate states
 
-`DESIGNING` → **`MACHINE_VALIDATED`** (this build) → `PREVIEW_READY` → `HUMAN_TEST_READY` → `PROVEN` (humans only).
+`DESIGNING` → `MACHINE_VALIDATED` → `PREVIEW_READY` → **`PREVIEW_READY_POLISH_1`** (this build) → `HUMAN_TEST_READY` → `PROVEN` (humans only).
 
 ## Open product risks
 
@@ -52,3 +52,17 @@ reasoning anywhere, no fake live run, no external effect (everything `realm: SAN
 3. SAME WORLD split shows two cropped stamps at 50%; people may need to drag before it reads.
 4. Calendar/document are simulations. Visitors could still over-generalise the single Opus specimen.
 5. Four index tabs are the first navigation this product has had. Watch that it doesn't turn into "an app".
+
+## Polish pass 1 (from the real 2m16 public walkthrough)
+
+1. **Route scroll reset.** Every top-level route (WORLD · CHANGE IT · REPLAY · LIVE, in-content links, back/forward)
+   opens at its own top: `history.scrollRestoration = "manual"`, `overflow-anchor: none`, reset re-asserted for
+   two frames unless the visitor scrolls first. In-mode controls (scrub, gap, seam) never re-render, so never reset.
+2. **Challenge staging.** READY and LOOKING: CHANGE IT NOW is hidden and locked (`aria-hidden`, disabled); START is
+   the only move. TRAVEL: it slams in (large, coral, thumb-sticky on mobile) and the spent START disappears.
+3. **Plain copy.** No-change: "Nothing changed. What it saw was still true." Too late: "It acted first. What it
+   saw was still true then." Verdicts stay object-specific (STILL VALID · SENT / STILL FREE · CONFIRMED / STILL
+   LATEST · SENT). Tick numbers and "canonical sandbox kernel" left the primary copy (still in PROOF / provenance tag).
+4. **Replay entrance.** REPLAY WHAT THE AGENT SAW. + one line + the four beats, before sources, object, scrubber, strip.
+5. **Live entrance.** REAL AGENT RUN. → CLAUDE OPUS 5.5 → RECORDED GENUINE RUN / NOT RUNNING NOW → RE-VERIFIED ·
+   STOPPED BEFORE COMMIT → the replay, all in the first screen. RUN LIVE still disabled; REFUSED only in PROOF.

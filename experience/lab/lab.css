@@ -2,7 +2,7 @@
    magenta reality, violet ink. Objects are the stars; every size inside an object is a
    fraction of --ow so one component works full-size and as a contact-sheet thumbnail. */
 
-.lab { min-height: 100vh; padding: 0 var(--gutter) 64px; position: relative; overflow-x: clip; }
+.lab { min-height: 100vh; padding: 0 var(--gutter) 64px; position: relative; overflow-x: clip; overflow-anchor: none; }
 .lab[hidden] { display: none; }
 
 /* ---------- shell: title, mode chip, paper index tabs ---------- */
@@ -38,6 +38,7 @@
 .lab-headline.is-in .lab-headline__text { animation: headline-in 380ms var(--slam); }
 .lab-kicker { margin: 14px 0 0; font-size: 18px; line-height: 1.35; max-width: 46ch; }
 .lab-kicker b { font-weight: 800; }
+.lab-prov { display: inline-block; margin-left: 4px; font: 700 11px var(--mono); letter-spacing: 0.14em; color: var(--ink-2); border: 1.5px dashed var(--ink-2); padding: 1px 6px; vertical-align: 2px; }
 
 /* =====================================================================
    WORLD OBJECTS
@@ -277,7 +278,13 @@
 .change-now span { font: 700 12px var(--mono); letter-spacing: 0.14em; }
 .change-now b { font-size: 34px; line-height: 1; letter-spacing: 0.02em; }
 .change-now:disabled { background: var(--paper-2); color: var(--ink-2); border-style: dashed; box-shadow: none; cursor: default; }
-.lab-chal[data-phase="TRAVEL"] .change-now { animation: urge 900ms ease-in-out infinite; }
+/* Staging: CHANGE IT NOW does not exist for the visitor until the agent starts moving. */
+.lab-chal[data-phase="READY"] .change-now, .lab-chal[data-phase="LOOKING"] .change-now { display: none; }
+.lab-chal[data-phase="TRAVEL"] .change-now { animation: arrive 380ms var(--slam), urge 900ms ease-in-out 380ms infinite; }
+@keyframes arrive { from { transform: rotate(-7deg) scale(1.4); opacity: 0; box-shadow: 0 0 0 var(--ink); } to { transform: rotate(-1deg); opacity: 1; } }
+.lab-chal[data-phase="TRAVEL"] .change-now b { font-size: 40px; }
+/* once started, the spent START gives way: CHANGE IT NOW is the only move */
+.lab-chal:not([data-phase="READY"]) .lab-exp__row .lab-next__primary { display: none; }
 @keyframes urge { 50% { transform: rotate(-1deg) scale(1.02); } }
 .lab-chal[data-phase="TRAVEL"] .ticket__stub--act { transform: translateX(calc(var(--tension, 0) * 3px)); animation: strain 120ms linear infinite; }
 @keyframes strain { 50% { transform: translateX(calc(var(--tension, 0) * -3px)); } }
@@ -352,10 +359,22 @@
 .specimen { margin-top: clamp(14px, 2.4vw, 30px); }
 .specimen__kicker { margin: 0; font: 700 12px var(--mono); letter-spacing: 0.24em; color: var(--ink-2); }
 .specimen__title { margin: 4px 0 0 -0.04em; font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: clamp(56px, 11vw, 180px); line-height: 0.82; letter-spacing: -0.035em; color: var(--ink); }
-.specimen__model { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 14px 0 0; font: 700 13px var(--mono); letter-spacing: 0.1em; }
-.specimen__model i { font-style: normal; color: var(--ink-2); }
+.specimen__id { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 14px; }
+.specimen__model { margin: 0; font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: clamp(38px, 6.4vw, 104px); line-height: 0.86; letter-spacing: -0.025em; color: var(--cobalt); }
+.specimen__recorded { display: grid; gap: 2px; margin: 0; padding: 10px 16px; background: var(--ink); color: var(--paper); transform: rotate(-1.5deg); box-shadow: 6px 7px 0 var(--lime); }
+.specimen__recorded b { font: 800 clamp(13px, 1.4vw, 17px) / 1.2 var(--mono); letter-spacing: 0.14em; }
+.specimen__meta { margin: 14px 0 0; font: 700 12px var(--mono); letter-spacing: 0.1em; color: var(--ink-2); }
+.specimen__meta i { font-style: normal; }
 .specimen__label { display: inline-block; margin: 18px 0 0; padding: 10px 18px; font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: clamp(26px, 3.6vw, 48px); line-height: 1; color: var(--violet); border: 10px double var(--violet); transform: rotate(-1.5deg); }
 .specimen__replay .lab-headline { display: none; }
+/* Replay entrance: the proposition before the evidence controls. */
+.replay-intro { margin-top: clamp(14px, 2.4vw, 30px); }
+.replay-intro__title { margin: 0 0 0 -0.04em; font-family: var(--display); font-weight: 800; font-stretch: 75%; font-size: clamp(50px, 9.4vw, 160px); line-height: 0.82; letter-spacing: -0.035em; color: var(--ink); }
+.replay-intro__sub { margin: 14px 0 0; font-size: 19px; line-height: 1.35; max-width: 44ch; }
+.replay-intro__beats { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 16px 0 0; padding: 0; font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 17px; letter-spacing: 0.03em; }
+.replay-intro__beats li { position: relative; }
+.replay-intro__beats li + li::before { content: "→"; position: absolute; left: -17px; font-weight: 400; color: var(--ink-2); }
+.lab-headline--frame { font-size: clamp(40px, 5.6vw, 92px); }
 .runlive { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; margin-top: 30px; padding: 16px 18px; border: 3px dashed var(--ink-2); }
 .runlive__btn { grid-row: span 2; min-height: 56px; padding: 10px 20px; font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 20px; background: var(--paper-2); color: var(--ink-2); border: 3px dashed var(--ink-2); }
 .runlive__state { margin: 0; font: 800 12px var(--mono); letter-spacing: 0.12em; }
@@ -369,6 +388,11 @@
   .lab__tabs a { font-size: 15px; padding: 8px 12px 6px; }
   .lab-headline { font-size: 17vw; }
   .lab-headline[data-len="long"] { font-size: 11vw; }
+  .lab-headline--frame { font-size: 12vw; }
+  .replay-intro__title { font-size: 15vw; }
+  .replay-intro__beats { display: grid; gap: 4px; }
+  .replay-intro__beats li + li::before { position: static; margin-right: 6px; }
+  .specimen__model { font-size: 13vw; }
   .lab-exp, .lab-chal { grid-template-columns: minmax(0, 1fr); }
   .lab-exp__object { grid-column: 1; grid-row: auto; justify-self: center; padding: 36px 0 44px; }
   .lab-exp__controls { grid-row: auto; }

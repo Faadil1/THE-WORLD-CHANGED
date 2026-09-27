@@ -39,7 +39,8 @@ export function renderChallenge(root: HTMLElement, id: string | undefined): () =
   start.type = "button";
   const now = h("button", "change-now", `<span>${esc(def.copy.mutation)}</span><b>CHANGE IT NOW</b>`);
   now.type = "button";
-  now.disabled = true;
+  now.disabled = true; // locked and hidden until the agent starts travelling
+  now.setAttribute("aria-hidden", "true");
   const result = h("div", "lab-result");
   result.setAttribute("aria-live", "assertive");
   const status = h("p", "lab-kicker", `The agent will look, get ready to <b>${esc(def.copy.action.toLowerCase())}</b>, then head for ACT. You have one move.`);
@@ -149,8 +150,9 @@ export function renderChallenge(root: HTMLElement, id: string | undefined): () =
     status.innerHTML = `<b>READY.</b> heading for ACT — change the world before it gets there.`;
     await sleep(350);
     if (!alive) return;
-    view.dataset.phase = "TRAVEL";
+    view.dataset.phase = "TRAVEL"; // CHANGE IT NOW arrives only now (CSS), locked until this point
     now.disabled = false;
+    now.setAttribute("aria-hidden", "false");
     now.focus({ preventScroll: true });
     t0 = performance.now();
     const discrete = reducedMotion();
@@ -206,17 +208,19 @@ export function renderChallenge(root: HTMLElement, id: string | undefined): () =
     const o = r.receipt.outcome;
     const verdict =
       r.timing === "IN_TIME"
-        ? `YOU CHANGED IT AT t${r.mutationTick} — BEFORE ACT (t${CHALLENGE_ACT_TICK}).`
+        ? `YOU CHANGED IT IN TIME — BEFORE IT ACTED.`
         : r.timing === "TOO_LATE"
-          ? `TOO LATE — t${r.mutationTick}. IT ALREADY ACTED AT t${CHALLENGE_ACT_TICK}.`
-          : `YOU DIDN'T CHANGE IT. IT ACTED ON WHAT WAS TRUE.`;
+          ? `TOO LATE. IT HAD ALREADY ACTED.`
+          : `YOU DIDN'T CHANGE IT.`;
     hl.set(r.timing === "IN_TIME" ? def.copy.finalHeadline : r.timing === "TOO_LATE" ? "TOO LATE." : "STILL TRUE.", r.timing === "IN_TIME" ? "final" : "true");
     status.innerHTML = `<b>${esc(verdict)}</b>`;
     result.innerHTML = `
       <div class="lab-stamp lab-stamp--${o.kind}">${esc(o.label)}</div>
       <p class="lab-line">${
         r.timing !== "IN_TIME"
-          ? "The world was still true when it acted."
+          ? r.timing === "TOO_LATE"
+            ? "It acted first. What it saw was still true then."
+            : "Nothing changed. What it saw was still true."
           : o.kind === "STOPPED"
             ? "It checked again before acting and stopped."
             : "It didn't check again. It acted on the old view."

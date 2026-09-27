@@ -109,3 +109,37 @@ describe("canonical kernel is untouched by the scenario system", () => {
     expect(ACCESS.provenance).toBe("CANONICAL_KERNEL");
   });
 });
+
+describe("polish pass 1 regressions (browser coverage: tools/lab_polish_check.py)", () => {
+  const css = read("experience/lab/lab.css");
+  it("route scroll reset: restoration manual, anchoring off, reset on every route render (not on in-mode controls)", () => {
+    const app = read("experience/lab/app.ts");
+    expect(app).toMatch(/history\.scrollRestoration = "manual"/);
+    expect(app).toMatch(/viewEl\.focus\(\{ preventScroll: true \}\);\s*resetScroll\(\);/);
+    expect(css).toMatch(/\.lab \{[^}]*overflow-anchor: none/);
+    // in-mode controls never navigate, so they never trigger the reset
+    for (const f of ["replay.ts", "sameworld.ts", "ticket.ts"]) expect(read(`experience/lab/${f}`), f).not.toMatch(/resetScroll|scrollTo\(/);
+  });
+  it("challenge staging: CHANGE IT NOW hidden before travel, arrives in TRAVEL, starts locked", () => {
+    expect(css).toMatch(/\[data-phase="READY"\] \.change-now, \.lab-chal\[data-phase="LOOKING"\] \.change-now \{ display: none; \}/);
+    expect(css).toMatch(/\[data-phase="TRAVEL"\] \.change-now \{ animation: arrive/);
+    const chal = read("experience/lab/challenge.ts");
+    expect(chal).toMatch(/now\.disabled = true; \/\/ locked and hidden until the agent starts travelling/);
+  });
+  it("human copy: no-change outcomes use plain causal language; object verdicts kept", () => {
+    for (const f of readdirSync(join(ROOT, "experience/lab"))) expect(read(`experience/lab/${f}`), f).not.toMatch(/still true when it acted|IT ACTED ON WHAT WAS TRUE/);
+    expect(read("experience/lab/challenge.ts")).toContain("Nothing changed. What it saw was still true.");
+    expect(read("experience/lab/experiment.ts")).toContain("Nothing changed. What it saw was still true.");
+    expect([SCENARIOS.access.copy.validOutcome, SCENARIOS.calendar.copy.validOutcome, SCENARIOS.document.copy.validOutcome]).toEqual(["STILL VALID · SENT", "STILL FREE · CONFIRMED", "STILL LATEST · SENT"]);
+  });
+  it("replay entrance and live entrance copy", () => {
+    const rep = read("experience/lab/replay.ts");
+    expect(rep).toContain("REPLAY WHAT THE AGENT SAW.");
+    expect(rep).toContain("Move through the run. Watch what the agent knew and what the world became.");
+    const src = read("experience/lab/live.ts");
+    const live = src.slice(src.indexOf('<header class="specimen">'), src.indexOf("</header>"));
+    const order = ["REAL AGENT RUN.", "CLAUDE OPUS 5.5", "RECORDED GENUINE RUN", "NOT RUNNING NOW", "labelOf(live)"].map((t) => live.indexOf(t));
+    expect(order.every((i) => i >= 0)).toBe(true);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+  });
+});

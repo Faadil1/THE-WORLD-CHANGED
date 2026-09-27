@@ -38,8 +38,12 @@ export function renderLive(root: HTMLElement): () => void {
     <header class="specimen">
       <p class="specimen__kicker">SPECIMEN 001</p>
       <h2 class="specimen__title"><span>REAL AGENT RUN.</span></h2>
-      <p class="specimen__model">CLAUDE OPUS 5.5 <i>·</i> ${esc(transportLabel(live.transport))} <i>·</i> 4 SANDBOX TOOLS <i>·</i> ${esc(live.started_at.slice(0, 10))}</p>
+      <div class="specimen__id">
+        <p class="specimen__model">CLAUDE OPUS 5.5</p>
+        <p class="specimen__recorded"><b>RECORDED GENUINE RUN</b><b>NOT RUNNING NOW</b></p>
+      </div>
       <p class="specimen__label">${esc(labelOf(live))}</p>
+      <p class="specimen__meta">${esc(transportLabel(live.transport))} <i>·</i> 4 SANDBOX TOOLS <i>·</i> ${esc(live.started_at.slice(0, 10))} <i>·</i> replayed from the stored receipt</p>
     </header>`;
   const replayHost = h("div", "specimen__replay");
   view.append(replayHost);

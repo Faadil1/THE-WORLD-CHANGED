@@ -55,6 +55,7 @@ export function renderReplay(root: HTMLElement, src: string, opts: { embedded?: 
   const def = scenario(r.scenario);
   const view = h("section", `lab-replay lab-replay--${r.provenance.toLowerCase()}`);
   const hl = headline();
+  hl.el.classList.add("lab-headline--frame");
   const obj = createWorldObject(def, "full");
   const cap = h("p", "replay-cap");
   const strip = h("ol", "evidence-strip");
@@ -85,6 +86,18 @@ export function renderReplay(root: HTMLElement, src: string, opts: { embedded?: 
   controls.append(prev, range, next);
 
   if (!opts.embedded) {
+    // Entrance: the proposition first, then the evidence controls.
+    view.append(
+      h(
+        "header",
+        "replay-intro",
+        `<h2 class="replay-intro__title">REPLAY WHAT THE AGENT SAW.</h2>
+         <p class="replay-intro__sub">Move through the run. Watch what the agent knew and what the world became.</p>
+         <ol class="replay-intro__beats" aria-label="What each frame shows">
+           <li>WHAT THE AGENT SAW</li><li>WHAT IT PREPARED</li><li>WHAT THE WORLD BECAME</li><li>WHAT IT CHECKED / DID</li>
+         </ol>`,
+      ),
+    );
     const sources = h("div", "sources");
     const list: Array<[ReplaySource, string]> = [
       ["last", "YOUR LAST RUN"],

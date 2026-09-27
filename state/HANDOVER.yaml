@@ -9,7 +9,7 @@ branches:
     gate: HUMAN_COMPREHENSION — not proven (needs 5 real participants)
   build/agent-lab-v0:
     role: product expansion (Lab, Challenge, Replay, Same World, Live specimen)
-    gate: PRODUCT_EXPANSION_V0 — PREVIEW_READY
+    gate: PRODUCT_EXPANSION_V0 — PREVIEW_READY_POLISH_1
     merge: not merged; promotion requires an explicit decision
 
 working:
@@ -23,7 +23,7 @@ working:
 proof_status:
   live_proof: PROVEN (one genuine Opus 5.5 receipt; unchanged)
   deterministic_kernel: PROVEN (unchanged)
-  product_expansion_v0: PREVIEW_READY (machine-validated + Cloudflare deployment successful; no humans yet)
+  product_expansion_v0: PREVIEW_READY_POLISH_1 (walkthrough fixes: route tops, challenge staging, plain copy, replay + live entrances; no humans yet)
 
 known_blockers:
   - public live execution: no secure executor on a static build (see product/LIVE-AGENT-LAB.md)

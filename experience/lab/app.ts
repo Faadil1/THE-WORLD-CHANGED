@@ -85,8 +85,35 @@ function render(): void {
       cleanup = renderLive(viewEl);
       break;
   }
-  window.scrollTo(0, 0);
   viewEl.focus({ preventScroll: true });
+  resetScroll();
+}
+
+/**
+ * Every top-level route opens at its own top. The browser's scroll restoration is off, and the
+ * reset is re-asserted for two frames (late layout, momentum scrolling) unless the visitor
+ * scrolls first. Within-mode controls (replay scrubbing, gap, seam) never re-render, so they
+ * never reset the scroll.
+ */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+let pendingReset: AbortController | null = null;
+function resetScroll(): void {
+  pendingReset?.abort();
+  const ac = new AbortController();
+  pendingReset = ac;
+  const top = () => {
+    if (!ac.signal.aborted) window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  };
+  top();
+  // The visitor scrolling first always wins over the late re-assertions.
+  for (const ev of ["wheel", "touchstart", "keydown"]) addEventListener(ev, () => ac.abort(), { once: true, passive: true, signal: ac.signal });
+  requestAnimationFrame(() => {
+    top();
+    requestAnimationFrame(() => {
+      top();
+      ac.abort(); // done: remove the listeners
+    });
+  });
 }
 
 addEventListener("hashchange", render);

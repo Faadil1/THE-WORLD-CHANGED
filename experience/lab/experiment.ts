@@ -47,7 +47,11 @@ export function renderExperiment(root: HTMLElement, id: string): () => void {
   result.setAttribute("aria-live", "assertive");
 
   const side = h("div", "lab-exp__controls");
-  const kicker = h("p", "lab-kicker", `<b>${esc(def.title)}</b> · ${def.provenance === "CANONICAL_KERNEL" ? "canonical sandbox kernel" : "simulated sandbox world"} · the agent looked, then got ready to <b>${esc(def.copy.action.toLowerCase())}</b>`);
+  const kicker = h(
+    "p",
+    "lab-kicker",
+    `<b>${esc(def.title)}</b> · the agent looked, then got ready to <b>${esc(def.copy.action.toLowerCase())}</b>. <span class="lab-prov">${def.provenance === "CANONICAL_KERNEL" ? "sandbox" : "simulated world"}</span>`,
+  );
   const row = h("div", "lab-exp__row");
   row.append(gate.el, actBtn);
   side.append(kicker, ticket.el, row, result);
@@ -107,10 +111,10 @@ export function renderExperiment(root: HTMLElement, id: string): () => void {
       o.kind === "ACTED_ON_STALE"
         ? `It acted on what it saw earlier. The world had already changed.`
         : o.kind === "STOPPED"
-          ? `It checked again, saw ${esc(def.copy.changedValue)}, and stopped. ${esc(def.copy.stoppedDetail)}.`
+          ? `It checked again, saw ${esc(def.copy.changedValue)}, and stopped. Nothing was sent.`
           : receipt.timing.mutation_in_time === false
-            ? `The world changed after it acted.`
-            : `Nothing changed while it waited.`;
+            ? `It acted first. What it saw was still true then.`
+            : `Nothing changed. What it saw was still true.`;
     result.innerHTML = `
       <div class="lab-stamp lab-stamp--${o.kind}">${esc(o.label)}</div>
       <p class="lab-line">${line} ${o.effect ? `<span class="simtag">${esc(o.effect.label)}</span>` : ""}</p>

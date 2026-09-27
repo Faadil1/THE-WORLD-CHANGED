@@ -108,7 +108,7 @@ visual_pass_2:
 
 product_expansion_v0:
   gate: PRODUCT_EXPANSION_V0
-  state: PREVIEW_READY
+  state: PREVIEW_READY_POLISH_1
   branch: build/agent-lab-v0
   base: "build/comprehension-v0 @ dab18784a7f171dad01f919d8961568e3a9d4700"
   north_star: "THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts."
@@ -124,6 +124,12 @@ product_expansion_v0:
   production_stimulus_changed: false
   spec: product/PRODUCT-EXPANSION-V0.md
   evidence: evidence/screenshots/agent-lab-v0/
+  polish_1:
+    source: "real 2m16 public walkthrough"
+    fixed: [ROUTE_SCROLL_RESET, CHALLENGE_STAGING, HUMAN_COPY_NO_CHANGE, REPLAY_ENTRANCE, LIVE_ENTRANCE]
+    evidence: evidence/screenshots/agent-lab-v0-polish-1/
+    browser_regression: tools/lab_polish_check.py
+    cloudflare_redeploy: "expected from push to build/agent-lab-v0 (project the-world-changed-lab); not verified from this environment"
   cloudflare_preview:
     status: DEPLOYED_SUCCESS
     pushed_commit: e2017768252648b9d1935693d96f1992f3a724c2

@@ -1,0 +1,50 @@
+{
+  "desktop": {
+    "checks": {
+      "route_tops": "tabs, in-content link, back/forward open at top; scrub keeps position",
+      "challenge": "CTA hidden+locked at READY and LOOKING; arrives enabled in TRAVEL; no-change copy plain",
+      "replay_entrance": "proposition + beats above sources, object, scrubber, strip; PROOF collapsed",
+      "live_entrance": "REAL AGENT RUN. > CLAUDE OPUS 5.5 > RECORDED/NOT RUNNING > label > replay; in first screen; RUN LIVE disabled"
+    },
+    "shots": [
+      "desktop/00-world.jpg",
+      "desktop/01-challenge-ready.jpg",
+      "desktop/02-challenge-active.jpg",
+      "desktop/03-replay-entrance.jpg",
+      "desktop/04-live-entrance.jpg"
+    ],
+    "contact_sheet": "contact-sheet-desktop.jpg"
+  },
+  "mobile": {
+    "checks": {
+      "route_tops": "tabs, in-content link, back/forward open at top; scrub keeps position",
+      "challenge": "CTA hidden+locked at READY and LOOKING; arrives enabled in TRAVEL; no-change copy plain",
+      "replay_entrance": "proposition + beats above sources, object, scrubber, strip; PROOF collapsed",
+      "live_entrance": "REAL AGENT RUN. > CLAUDE OPUS 5.5 > RECORDED/NOT RUNNING > label > replay; in first screen; RUN LIVE disabled"
+    },
+    "shots": [
+      "mobile/00-world.jpg",
+      "mobile/01-challenge-ready.jpg",
+      "mobile/02-challenge-active.jpg",
+      "mobile/03-replay-entrance.jpg",
+      "mobile/04-live-entrance.jpg"
+    ],
+    "contact_sheet": "contact-sheet-mobile.jpg"
+  },
+  "reduced-motion": {
+    "checks": {
+      "route_tops": "tabs, in-content link, back/forward open at top; scrub keeps position",
+      "challenge": "CTA hidden+locked at READY and LOOKING; arrives enabled in TRAVEL; no-change copy plain",
+      "replay_entrance": "proposition + beats above sources, object, scrubber, strip; PROOF collapsed",
+      "live_entrance": "REAL AGENT RUN. > CLAUDE OPUS 5.5 > RECORDED/NOT RUNNING > label > replay; in first screen; RUN LIVE disabled"
+    },
+    "shots": [
+      "reduced-motion/00-world.jpg",
+      "reduced-motion/01-challenge-ready.jpg",
+      "reduced-motion/02-challenge-active.jpg",
+      "reduced-motion/03-replay-entrance.jpg",
+      "reduced-motion/04-live-entrance.jpg"
+    ],
+    "contact_sheet": "contact-sheet-reduced-motion.jpg"
+  }
+}

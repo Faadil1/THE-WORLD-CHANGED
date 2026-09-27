@@ -18,15 +18,15 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE = "http://localhost:4173/"
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "evidence/screenshots/agent-lab-v0")
-OUT.mkdir(parents=True, exist_ok=True)
+OUT = Path(sys.argv[1] if len(sys.argv) > 1 and __name__ == "__main__" else "evidence/screenshots/agent-lab-v0")
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 results = {}
 
 
 class Run:
-    def __init__(self, browser, name, viewport, touch=False, reduced=False, keyboard=False):
+    def __init__(self, browser, name, viewport, touch=False, reduced=False, keyboard=False, out=None):
         self.name, self.touch, self.keyboard = name, touch, keyboard
+        self.out = out or OUT
         self.ctx = browser.new_context(viewport=viewport, has_touch=touch, is_mobile=touch, device_scale_factor=1,
                                        reduced_motion="reduce" if reduced else "no-preference")
         self.page = self.ctx.new_page()
@@ -37,7 +37,7 @@ class Run:
         self.checks = {}
 
     def shot(self, label, full=False):
-        path = OUT / self.name / f"{len(self.shots):02d}-{label}.jpg"
+        path = self.out / self.name / f"{len(self.shots):02d}-{label}.jpg"
         path.parent.mkdir(parents=True, exist_ok=True)
         self.page.screenshot(path=str(path), full_page=full, type="jpeg", quality=72)
         self.shots.append((label, path))
@@ -227,9 +227,11 @@ def challenge(r, guarded, press):
     if guarded:
         r.activate(".lab-chal .gate")
     p.evaluate("window.scrollTo(0,0)")
+    assert not p.locator(".change-now").is_visible() and p.locator(".change-now").is_disabled(), "CHANGE IT NOW must be locked before START"
     r.shot("challenge-start")
     r.activate(".lab-chal .lab-next__primary")
     p.wait_for_selector('.lab-chal[data-phase="TRAVEL"]', timeout=4000)
+    assert p.locator(".change-now").is_visible() and p.locator(".change-now").is_enabled(), "CHANGE IT NOW arrives once the agent travels"
     p.wait_for_timeout(900)
     if press == "drag":
         r.drag(".change-now", (".lab-chal .ticket__strip", 0.5, 0.5), steps=6)
@@ -305,14 +307,16 @@ def live(r):
     r.checks["live"] = "RECORDED chip; behavior label; RUN LIVE disabled; REFUSED only in PROOF"
 
 
-def contact_sheet(name, shots):
+def contact_sheet(name, shots, out=None):
+    out_dir = out or OUT
     from PIL import Image, ImageDraw
 
     th = 360
     imgs = []
     for label, path in shots:
         im = Image.open(path)
-        im = im.crop((0, 0, im.width, min(im.height, int(im.width * 1.25)))) if im.height > im.width * 1.25 else im
+        # crop only long full-page captures; a phone viewport (~2.2:1) stays whole so its thumb zone shows
+        im = im.crop((0, 0, im.width, int(im.width * 2.2))) if im.height > im.width * 2.2 else im
         imgs.append((label, im.resize((int(im.width * th / im.height), th))))
     cols = 6
     rows = [imgs[i:i + cols] for i in range(0, len(imgs), cols)]
@@ -330,31 +334,33 @@ def contact_sheet(name, shots):
             d.rectangle([x - 1, y + cap - 1, x + im.width, y + cap + th], outline=(29, 20, 66))
             x += im.width + pad
         y += th + cap + pad
-    out = OUT / f"contact-sheet-{name}.jpg"
+    out = out_dir / f"contact-sheet-{name}.jpg"
     sheet.save(out, quality=80)
     return out.name
 
 
-with sync_playwright() as pw:
-    browser = pw.chromium.launch(executable_path=CHROME)
-    variants = [
-        ("desktop", dict(viewport={"width": 1440, "height": 900}), dict(guarded=False, press="drag")),
-        ("mobile", dict(viewport={"width": 390, "height": 844}, touch=True), dict(guarded=True, press="tap")),
-        ("reduced-motion", dict(viewport={"width": 1440, "height": 900}, reduced=True, keyboard=True), dict(guarded=True, press="key")),
-    ]
-    for name, ctx, chal in variants:
-        r = Run(browser, name, **ctx)
-        hero_to_lab(r)
-        lab_access(r)
-        same_world(r)
-        calendar_unguarded(r)
-        challenge(r, **chal)
-        replay(r)
-        live(r)
-        assert r.errors == [], r.errors
-        results[name] = {"checks": r.checks, "shots": [str(p.relative_to(OUT)) for _, p in r.shots], "contact_sheet": contact_sheet(name, r.shots), "console_errors": r.errors}
-        r.ctx.close()
-    browser.close()
+if __name__ == "__main__":
+    OUT.mkdir(parents=True, exist_ok=True)
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=CHROME)
+        variants = [
+            ("desktop", dict(viewport={"width": 1440, "height": 900}), dict(guarded=False, press="drag")),
+            ("mobile", dict(viewport={"width": 390, "height": 844}, touch=True), dict(guarded=True, press="tap")),
+            ("reduced-motion", dict(viewport={"width": 1440, "height": 900}, reduced=True, keyboard=True), dict(guarded=True, press="key")),
+        ]
+        for name, ctx, chal in variants:
+            r = Run(browser, name, **ctx)
+            hero_to_lab(r)
+            lab_access(r)
+            same_world(r)
+            calendar_unguarded(r)
+            challenge(r, **chal)
+            replay(r)
+            live(r)
+            assert r.errors == [], r.errors
+            results[name] = {"checks": r.checks, "shots": [str(p.relative_to(OUT)) for _, p in r.shots], "contact_sheet": contact_sheet(name, r.shots), "console_errors": r.errors}
+            r.ctx.close()
+        browser.close()
 
-(OUT / "lab-check.json").write_text(json.dumps(results, indent=2, ensure_ascii=False) + "\n")
-print(json.dumps({k: v["checks"] for k, v in results.items()}, indent=2, ensure_ascii=False))
+    (OUT / "lab-check.json").write_text(json.dumps(results, indent=2, ensure_ascii=False) + "\n")
+    print(json.dumps({k: v["checks"] for k, v in results.items()}, indent=2, ensure_ascii=False))
