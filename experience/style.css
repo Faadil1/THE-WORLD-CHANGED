@@ -492,3 +492,18 @@ button { font: inherit; color: inherit; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .bench[data-scan="go"] .scanner { top: auto; bottom: 0; }
 }
+
+/* ---------- the door to the Lab (appears only after a hero outcome) ---------- */
+.door {
+  align-self: flex-start; display: inline-flex; flex-direction: column; gap: 4px; margin-top: 10px;
+  padding: 14px 22px 14px 18px; min-height: 56px; text-decoration: none; color: var(--ink);
+  background: var(--lime); border: 3px solid var(--ink); box-shadow: 6px 7px 0 var(--ink);
+  transform: rotate(-1.5deg); transition: transform 160ms var(--snap), box-shadow 160ms;
+  clip-path: polygon(0 0, 100% 0, 100% 38%, 97% 50%, 100% 62%, 100% 100%, 0 100%); /* ticket notch */
+}
+.door b { font-family: var(--display); font-weight: 800; font-stretch: 78%; font-size: 24px; letter-spacing: 0.02em; }
+.door span { font: 700 12px var(--mono); letter-spacing: 0.14em; }
+.door:hover, .door:focus-visible { transform: rotate(-0.5deg) translateY(-2px); box-shadow: 7px 10px 0 var(--ink); }
+.door:focus-visible { outline: 3px solid var(--violet); outline-offset: 4px; }
+.bench:not([data-mode="deterministic"]) .door { display: none; }
+body[data-view="lab"] .bench { display: none; }

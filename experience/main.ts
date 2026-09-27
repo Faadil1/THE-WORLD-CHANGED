@@ -5,6 +5,7 @@
  */
 import "@fontsource-variable/bricolage-grotesque/standard.css";
 import "@fontsource/schoolbell/index.css";
+import "./lab/app"; // the Lab behind the hero (hash routes); the hero itself is unchanged
 import { HeroController, MAX_GAP_TICKS, PREPARE_TICK, type HeroSnapshot } from "./controller";
 import {
   belief,

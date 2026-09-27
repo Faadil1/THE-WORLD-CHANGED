@@ -1,0 +1,101 @@
+{
+  "desktop": {
+    "checks": {
+      "front_door": "hero outcome BLOCKED -> door -> #lab",
+      "lab_access": "gap-only no divergence; mutation diverges; CHECK AGAIN -> STOPPED",
+      "same_world": "seam keyboard works; left stale / right stopped",
+      "calendar": "unchecked -> DOUBLE-BOOKED + INVITE SENT · SIMULATED",
+      "challenge": "drag -> IN_TIME / ACTED_ON_STALE",
+      "replay": "t0 observed -> t5 world changed (diverged) -> final OUTDATED PASS USED",
+      "live": "RECORDED chip; behavior label; RUN LIVE disabled; REFUSED only in PROOF"
+    },
+    "shots": [
+      "desktop/00-front-door-initial.jpg",
+      "desktop/01-front-door-stale.jpg",
+      "desktop/02-front-door-guarded.jpg",
+      "desktop/03-lab-world-selector.jpg",
+      "desktop/04-lab-experiment-active.jpg",
+      "desktop/05-lab-mutation.jpg",
+      "desktop/06-lab-outcome.jpg",
+      "desktop/07-lab-same-world.jpg",
+      "desktop/08-lab-calendar-unchecked.jpg",
+      "desktop/09-challenge-start.jpg",
+      "desktop/10-challenge-mutation-window.jpg",
+      "desktop/11-challenge-result.jpg",
+      "desktop/12-replay-observed.jpg",
+      "desktop/13-replay-world-changed.jpg",
+      "desktop/14-replay-final.jpg",
+      "desktop/15-live-specimen.jpg",
+      "desktop/16-live-proof-collapsed.jpg",
+      "desktop/17-live-proof-expanded.jpg"
+    ],
+    "contact_sheet": "contact-sheet-desktop.jpg",
+    "console_errors": []
+  },
+  "mobile": {
+    "checks": {
+      "front_door": "hero outcome BLOCKED -> door -> #lab",
+      "lab_access": "gap-only no divergence; mutation diverges; CHECK AGAIN -> STOPPED",
+      "same_world": "seam keyboard works; left stale / right stopped",
+      "calendar": "unchecked -> DOUBLE-BOOKED + INVITE SENT · SIMULATED",
+      "challenge": "tap -> IN_TIME / STOPPED",
+      "replay": "t0 observed -> t5 world changed (diverged) -> final OUTDATED PASS USED",
+      "live": "RECORDED chip; behavior label; RUN LIVE disabled; REFUSED only in PROOF"
+    },
+    "shots": [
+      "mobile/00-front-door-initial.jpg",
+      "mobile/01-front-door-stale.jpg",
+      "mobile/02-front-door-guarded.jpg",
+      "mobile/03-lab-world-selector.jpg",
+      "mobile/04-lab-experiment-active.jpg",
+      "mobile/05-lab-mutation.jpg",
+      "mobile/06-lab-outcome.jpg",
+      "mobile/07-lab-same-world.jpg",
+      "mobile/08-lab-calendar-unchecked.jpg",
+      "mobile/09-challenge-start.jpg",
+      "mobile/10-challenge-mutation-window.jpg",
+      "mobile/11-challenge-result.jpg",
+      "mobile/12-replay-observed.jpg",
+      "mobile/13-replay-world-changed.jpg",
+      "mobile/14-replay-final.jpg",
+      "mobile/15-live-specimen.jpg",
+      "mobile/16-live-proof-collapsed.jpg",
+      "mobile/17-live-proof-expanded.jpg"
+    ],
+    "contact_sheet": "contact-sheet-mobile.jpg",
+    "console_errors": []
+  },
+  "reduced-motion": {
+    "checks": {
+      "front_door": "hero outcome BLOCKED -> door -> #lab",
+      "lab_access": "gap-only no divergence; mutation diverges; CHECK AGAIN -> STOPPED",
+      "same_world": "seam keyboard works; left stale / right stopped",
+      "calendar": "unchecked -> DOUBLE-BOOKED + INVITE SENT · SIMULATED",
+      "challenge": "key -> IN_TIME / STOPPED",
+      "replay": "t0 observed -> t5 world changed (diverged) -> final OUTDATED PASS USED",
+      "live": "RECORDED chip; behavior label; RUN LIVE disabled; REFUSED only in PROOF"
+    },
+    "shots": [
+      "reduced-motion/00-front-door-initial.jpg",
+      "reduced-motion/01-front-door-stale.jpg",
+      "reduced-motion/02-front-door-guarded.jpg",
+      "reduced-motion/03-lab-world-selector.jpg",
+      "reduced-motion/04-lab-experiment-active.jpg",
+      "reduced-motion/05-lab-mutation.jpg",
+      "reduced-motion/06-lab-outcome.jpg",
+      "reduced-motion/07-lab-same-world.jpg",
+      "reduced-motion/08-lab-calendar-unchecked.jpg",
+      "reduced-motion/09-challenge-start.jpg",
+      "reduced-motion/10-challenge-mutation-window.jpg",
+      "reduced-motion/11-challenge-result.jpg",
+      "reduced-motion/12-replay-observed.jpg",
+      "reduced-motion/13-replay-world-changed.jpg",
+      "reduced-motion/14-replay-final.jpg",
+      "reduced-motion/15-live-specimen.jpg",
+      "reduced-motion/16-live-proof-collapsed.jpg",
+      "reduced-motion/17-live-proof-expanded.jpg"
+    ],
+    "contact_sheet": "contact-sheet-reduced-motion.jpg",
+    "console_errors": []
+  }
+}

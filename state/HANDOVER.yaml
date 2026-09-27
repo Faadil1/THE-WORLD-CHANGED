@@ -1,0 +1,34 @@
+# Concise handover for whoever picks this up next. Canonical detail lives in state/CURRENT.yaml.
+updated: 2026-09-27
+north_star: "THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts."
+
+branches:
+  build/comprehension-v0:
+    role: PRODUCTION STIMULUS (Cloudflare Pages production, https://the-world-changed.pages.dev/)
+    rule: do not modify while the Human Comprehension Gate is being tested
+    gate: HUMAN_COMPREHENSION — not proven (needs 5 real participants)
+  build/agent-lab-v0:
+    role: product expansion (Lab, Challenge, Replay, Same World, Live specimen)
+    gate: PRODUCT_EXPANSION_V0 — MACHINE_VALIDATED
+    merge: not merged; promotion requires an explicit decision
+
+working:
+  - hero unchanged; door to the Lab appears only after a hero outcome
+  - three worlds (ACCESS canonical kernel; CALENDAR + DOCUMENT simulated) with gap / when / CHECK AGAIN / act
+  - challenge with IN_TIME / TOO_LATE / NONE timing on logical ticks
+  - replay from receipts (last run, canonical unchecked/checked, recorded Opus run)
+  - same world, two outcomes (split seam)
+  - live specimen: recorded genuine Opus 5.5 run, RUN LIVE disabled
+
+proof_status:
+  live_proof: PROVEN (one genuine Opus 5.5 receipt; unchanged)
+  deterministic_kernel: PROVEN (unchanged)
+  product_expansion_v0: MACHINE_VALIDATED (tests + browser gestures; no humans yet)
+
+known_blockers:
+  - public live execution: no secure executor on a static build (see product/LIVE-AGENT-LAB.md)
+  - human evidence: none yet for the hero or the Lab
+
+next_gate:
+  - PREVIEW_READY: verify a Cloudflare branch preview of build/agent-lab-v0 without touching production
+  - HUMAN_TEST_READY: write a Lab test protocol (after the hero's comprehension gate is scored)

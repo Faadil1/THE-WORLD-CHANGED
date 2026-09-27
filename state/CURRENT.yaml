@@ -106,6 +106,25 @@ visual_pass_2:
   live_receipt_changed: false
   public_preview_note: "Cloudflare production re-verified on visual pass 2 commit dbcd1b99; participant testing must use this deployed visual pass."
 
+product_expansion_v0:
+  gate: PRODUCT_EXPANSION_V0
+  state: MACHINE_VALIDATED
+  branch: build/agent-lab-v0
+  base: "build/comprehension-v0 @ dab18784a7f171dad01f919d8961568e3a9d4700"
+  north_star: "THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts."
+  layers: [FRONT_DOOR, WORLD_PLAYGROUND, CHANGE_THE_WORLD_CHALLENGE, REPLAY, LIVE_AGENT_LAB]
+  scenarios:
+    access: CANONICAL_KERNEL
+    calendar: SANDBOX_SIMULATION
+    document: SANDBOX_SIMULATION
+  public_live_execution: DISABLED_NO_SECURE_EXECUTOR_ON_STATIC_BUILD
+  recorded_genuine_runs: 1
+  kernel_changed: false
+  live_receipt_changed: false
+  production_stimulus_changed: false
+  spec: product/PRODUCT-EXPANSION-V0.md
+  evidence: evidence/screenshots/agent-lab-v0/
+
 comprehension_pass_1:
   branch: build/comprehension-v0
   live_primary_label: "RE-VERIFIED · STOPPED BEFORE COMMIT"
