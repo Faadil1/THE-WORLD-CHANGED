@@ -1,132 +1,226 @@
 # THE WORLD CHANGED
 
-> A live AI agent sees the world correctly. You change the world before it acts.
+> **The agent saw the truth. Then you changed the world.**
 
-**30 Days of Real Business Problems — Day XX**
+THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts.
 
-THE WORLD CHANGED is an interactive experiment about the gap between an AI agent's observation of the world and the state of the world when its action reaches commit time.
+**Live Lab:** https://the-world-changed-lab.pages.dev/  
+**Front-door experiment:** https://the-world-changed.pages.dev/
 
-This project does **not** claim that stale state, TOCTOU, revalidation, fault injection, or agent replay are new problems. The novelty target is the interaction and experience:
+---
 
-**live agent + user world manipulation + physical observation→action gap + belief/reality misregistration + reproducible proof**
+## The idea
 
-## Core interaction
+An agent can observe a state that is genuinely correct and still make the wrong move later.
 
-### PULL THE GAP
+The problem is the interval between:
 
-```
-OBSERVE ●────────────● ACT
-          ↑        ↑
-        PULL THIS OPEN
-```
+**what the agent saw**  
+and  
+**what is true when it acts.**
 
-The visitor becomes the changing world.
+THE WORLD CHANGED makes that interval physical.
 
-1. The agent observes a valid state.
-2. The visitor physically opens the interval between observation and action.
-3. The visitor injects a real world-state change.
-4. BELIEF and REALITY fall out of registration.
-5. The interval snaps shut and the action reaches commit time.
-6. A commit-time verification can refresh state and prevent an invalid effect.
+You pull it open.
 
-## Hero experiment
+You change the world.
 
-### AUTHORITY EXPIRED
+Then you decide whether the agent checks again.
 
-Initial observation:
+---
 
-```
-ACCESS = GRANTED
-WORLD VERSION = N
-```
+## PULL THE GAP
 
-The agent prepares an export.
+The canonical experiment starts with an access pass.
 
-The visitor opens THE GAP and injects:
+The agent observes:
 
-```
-ADMIN REVOKES ACCESS
-WORLD VERSION = N + 1
-```
+**ACCESS GRANTED**
 
-The original observation is now stale.
+Then you open the gap between observation and action and insert:
 
-The experience compares:
+**ADMIN REVOKES ACCESS**
 
-- an unguarded action using the stale witness;
-- a guarded action that re-verifies current authority at commit time.
+The old observation was not hallucinated. It was true when observed.
 
-## Semantic rule
+The world changed afterwards.
 
-**BELIEF does not mean private chain-of-thought.**
+The experience compares the same world twice:
 
-In this project, BELIEF means:
+**WITHOUT CHECK AGAIN**  
+the stale authority can reach the simulated action.
 
-> the latest relevant world state actually observed by the agent.
+**WITH CHECK AGAIN**  
+the current world is re-read and the action stops.
 
-Only observable artifacts may be represented as evidence:
+---
+
+## Enter the Lab
+
+After the front-door experiment, the product expands into five connected layers.
+
+### WORLD
+
+Choose a world and run the experiment.
+
+- **ACCESS** — canonical kernel
+- **CALENDAR** — simulated product scenario
+- **DOCUMENT** — simulated product scenario
+
+### CHANGE IT
+
+Try to change reality before the agent reaches ACT.
+
+The gap becomes the timing window.
+
+### SAME WORLD, TWO OUTCOMES
+
+Compare the exact same mutation with and without a final re-check.
+
+### REPLAY
+
+Move through a completed run:
+
+**WHAT THE AGENT SAW**  
+→ **WHAT IT PREPARED**  
+→ **WHAT THE WORLD BECAME**  
+→ **WHAT IT CHECKED / DID**
+
+Replay is reconstructed from observable receipts.
+
+### LIVE
+
+Inspect **SPECIMEN 001** — a genuine recorded Claude Opus 5.5 run against the deterministic sandbox.
+
+The model:
+
+`observe_access`  
+→ `prepare_export`  
+→ **WORLD CHANGED**  
+→ `verify_access`  
+→ **STOP**
+
+Product label:
+
+**RE-VERIFIED · STOPPED BEFORE COMMIT**
+
+The recorded run is clearly labeled **NOT RUNNING NOW**.
+
+---
+
+## What is real, simulated, and proven
+
+### Deterministic kernel
+
+The ACCESS scenario runs on the canonical deterministic kernel and produces reproducible receipts.
+
+### Simulated product worlds
+
+CALENDAR and DOCUMENT are sandbox simulations used to demonstrate that the interaction generalizes.
+
+They are not presented as real-model evidence.
+
+### Genuine model evidence
+
+One Claude Opus 5.5 run was executed against the sandbox through the isolated TWC tool set and preserved as a receipt.
+
+The public site replays that run. It does not pretend replay is live execution.
+
+### No chain-of-thought
+
+The project never visualizes private reasoning.
+
+Only observable artifacts are used:
 
 - world state;
-- world version;
 - observations;
 - tool calls;
 - state mutations;
 - verification;
 - action attempts;
-- state diffs;
+- effects;
+- receipts;
 - outcomes.
 
-## Visual law
+---
 
-When BELIEF = REALITY, both layers are perfectly registered and appear as one.
+## Why this exists
 
-When BELIEF != REALITY, the layers physically separate and misregister.
+This project does **not** claim that stale state, TOCTOU, replay, revalidation, or commit-time authorization are new ideas.
 
-Motion must have a causal job:
+The novelty target is the experience:
 
-- gap width = elapsed vulnerability window;
-- plate separation = disagreement;
-- misregistration = stale state;
-- snap-to-register = successful refresh;
-- commit impact = attempted external effect.
+**live agent + user world manipulation + physical observation→action gap + belief/reality misregistration + reproducible proof**
 
-## Build order
+The goal is to make a subtle agent-safety failure mode understandable by interaction before technical explanation.
 
-1. Deterministic simulation kernel
-2. Automated tests
-3. PULL THE GAP interaction
-4. Authority-expiry hero scenario
-5. Deterministic rewind/replay + run receipt
-6. Visual refinement
-7. Real Claude Opus 5.5 execution against mock tools
-8. Additional experiments only after the hero passes
+---
 
-## Hard exclusions
+## Visual system
 
-Do not drift into:
+The product uses physical objects rather than a developer dashboard:
 
-- agent dashboards;
-- trace waterfalls;
-- generic node graphs;
-- isometric agent offices;
-- decorative 3D worlds;
-- fake model outcomes presented as real;
-- private chain-of-thought visualization.
+- access passes;
+- torn tickets;
+- paper calendars;
+- document stacks;
+- stamps;
+- misregistered print layers.
 
-## Proof standard
+When the latest observed world still matches reality, the layers remain registered.
 
-The public experience has two modes:
+When the world changes after observation, the old observed state lifts out of register.
 
-**EXPERIENCE MODE** — deterministic and replayable.
+---
 
-**LIVE PROOF MODE** — real model executions against sandboxed mock services only.
+## Accessibility
 
-If outcome rates are shown, they must be calculated from actual runs. No invented percentages.
+The interaction supports:
 
-## Status
+- mouse;
+- touch;
+- keyboard;
+- reduced motion.
 
-Concept: **LOCKED**
+Critical meaning is never carried by color alone.
 
-Current phase: **TECHNICAL REALITY CHECK**
+---
 
-See `state/CURRENT.yaml` for canonical execution state.
+## Current verification
+
+Automated product validation covers deterministic replay, scenario adapters, same-world comparison, Challenge timing, live-receipt presentation, keyboard interaction, reduced-motion state fidelity, and the canonical kernel.
+
+Human-comprehension and product-discoverability gates are tracked separately in the repository. Public claims should follow recorded evidence rather than assumed usability.
+
+See:
+
+- `state/CURRENT.yaml`
+- `product/HUMAN-COMPREHENSION-GATE.md`
+- `product/LAB-HUMAN-TEST-PROTOCOL.md`
+
+---
+
+## Run locally
+
+```bash
+npm install
+npm test
+npm run typecheck
+npm run build
+npm run dev
+```
+
+The Vite experience lives under `experience/`.
+
+---
+
+## Evidence
+
+Technical evidence lives under:
+
+- `evidence/runs/`
+- `evidence/screenshots/`
+- `evidence/storyboard/`
+- `evidence/agent-lab-v0/`
+
+The public experience keeps proof secondary. The interaction comes first.
