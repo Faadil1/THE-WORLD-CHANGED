@@ -125,11 +125,16 @@ product_expansion_v0:
   spec: product/PRODUCT-EXPANSION-V0.md
   evidence: evidence/screenshots/agent-lab-v0/
   cloudflare_preview:
-    status: NOT_VERIFIED
+    status: BLOCKED_BUILD_CONFIG
     pushed_commit: c8ffbc8e0d5903d3cf3746237fcbd62f09711390
-    expected_branch_alias: "https://build-agent-lab-v0.the-world-changed.pages.dev/ (Cloudflare's usual branch alias; unconfirmed)"
-    reason: "the build environment's network policy blocks *.pages.dev, so neither the preview nor production could be fetched from here"
+    expected_branch_alias: null
+    reason: "Cloudflare automatic preview builds for c8ffbc8 and 98267ff failed before deploy; dashboard reports root directory not found / build environment setup failure. No functional preview URL exists."
     production_rule: "production stays on build/comprehension-v0 until explicit promotion"
+    production_unchanged: VERIFIED
+    preview_builds:
+      c8ffbc8e0d5903d3cf3746237fcbd62f09711390: FAILED
+      98267ffc05f8bd47c1d22a2de8d064aaba96757d: FAILED
+    next_action: "Create an isolated Cloudflare project for agent-lab-v0 or correct preview root-directory configuration without changing production."
 
 comprehension_pass_1:
   branch: build/comprehension-v0
