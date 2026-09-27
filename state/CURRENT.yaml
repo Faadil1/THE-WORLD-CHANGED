@@ -108,7 +108,7 @@ visual_pass_2:
 
 product_expansion_v0:
   gate: PRODUCT_EXPANSION_V0
-  state: PREVIEW_READY_POLISH_1
+  state: HUMAN_TEST_READY
   branch: build/agent-lab-v0
   base: "build/comprehension-v0 @ dab18784a7f171dad01f919d8961568e3a9d4700"
   north_star: "THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts."
@@ -144,7 +144,13 @@ product_expansion_v0:
       c8ffbc8e0d5903d3cf3746237fcbd62f09711390: FAILED
       98267ffc05f8bd47c1d22a2de8d064aaba96757d: FAILED
     public_content_smoke: VERIFIED_FROM_USER_WALKTHROUGH
-    next_action: "Prepare and run the Lab human-test protocol; do not continue product expansion until human evidence identifies a concrete failure."
+    human_test_protocol: product/LAB-HUMAN-TEST-PROTOCOL.md
+    human_test_raw: evidence/agent-lab-v0/HUMAN-TEST-RAW.md
+    human_test_stimulus_commit: 6d376fec05877624d01d0d009e3ea084b90aba81
+    human_test_stimulus_url: https://c4d1195e.the-world-changed-lab.pages.dev/
+    human_test_participants_required: 5
+    human_test_evidence_count: 0
+    next_action: "Run P01-P05 with first-time humans using the immutable polish-1 stimulus; score only after verbatim answers and tasks are captured; do not continue product expansion until evidence identifies a concrete failure."
 
 comprehension_pass_1:
   branch: build/comprehension-v0
