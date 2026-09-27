@@ -9,7 +9,7 @@ branches:
     gate: HUMAN_COMPREHENSION — not proven (needs 5 real participants)
   build/agent-lab-v0:
     role: product expansion (Lab, Challenge, Replay, Same World, Live specimen)
-    gate: PRODUCT_EXPANSION_V0 — PREVIEW_READY_POLISH_1
+    gate: PRODUCT_EXPANSION_V0 — HUMAN_TEST_READY_POLISH_1
     merge: not merged; promotion requires an explicit decision
 
 working:
@@ -31,4 +31,4 @@ known_blockers:
 
 next_gate:
   - PREVIEW_READY: achieved via separate Cloudflare Pages project the-world-changed-lab; deploy check succeeded for e201776 and production stimulus remains separate.
-  - HUMAN_TEST_READY: write a Lab test protocol (after the hero's comprehension gate is scored)
+  - HUMAN_TEST_READY: protocol is ready at product/LAB-HUMAN-TEST-PROTOCOL.md. Run P01-P05 on immutable stimulus https://c4d1195e.the-world-changed-lab.pages.dev/ and score against exact verbatim evidence.
