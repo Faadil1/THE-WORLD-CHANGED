@@ -9,7 +9,7 @@ branches:
     gate: HUMAN_COMPREHENSION — not proven (needs 5 real participants)
   build/agent-lab-v0:
     role: product expansion (Lab, Challenge, Replay, Same World, Live specimen)
-    gate: PRODUCT_EXPANSION_V0 — MACHINE_VALIDATED
+    gate: PRODUCT_EXPANSION_V0 — PREVIEW_READY
     merge: not merged; promotion requires an explicit decision
 
 working:
@@ -23,13 +23,12 @@ working:
 proof_status:
   live_proof: PROVEN (one genuine Opus 5.5 receipt; unchanged)
   deterministic_kernel: PROVEN (unchanged)
-  product_expansion_v0: MACHINE_VALIDATED (tests + browser gestures; no humans yet)
+  product_expansion_v0: PREVIEW_READY (machine-validated + Cloudflare deployment successful; no humans yet)
 
 known_blockers:
   - public live execution: no secure executor on a static build (see product/LIVE-AGENT-LAB.md)
-  - agent-lab preview: Cloudflare automatic builds for c8ffbc8 and 98267ff both failed before deployment (root directory / build-environment setup); no preview URL exists yet
   - human evidence: none yet for the hero or the Lab
 
 next_gate:
-  - PREVIEW_READY: production is confirmed to remain on build/comprehension-v0. Create a separate Cloudflare preview project for build/agent-lab-v0 (repository root, npm run build, dist) or repair preview build config without modifying production; then verify the public Lab.
+  - PREVIEW_READY: achieved via separate Cloudflare Pages project the-world-changed-lab; deploy check succeeded for e201776 and production stimulus remains separate.
   - HUMAN_TEST_READY: write a Lab test protocol (after the hero's comprehension gate is scored)
