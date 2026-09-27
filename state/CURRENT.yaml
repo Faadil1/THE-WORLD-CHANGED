@@ -132,19 +132,19 @@ product_expansion_v0:
     cloudflare_redeploy: "expected from push to build/agent-lab-v0 (project the-world-changed-lab); not verified from this environment"
   cloudflare_preview:
     status: DEPLOYED_SUCCESS
-    pushed_commit: e2017768252648b9d1935693d96f1992f3a724c2
+    pushed_commit: 6d376fec05877624d01d0d009e3ea084b90aba81
     project: the-world-changed-lab
     url: https://the-world-changed-lab.pages.dev/
-    immutable_preview_url: https://92ba6b22.the-world-changed-lab.pages.dev/
-    deployment_id: 92ba6b22-8a5d-44ff-8276-fffad6950ada
-    reason: "Separate Cloudflare Pages project created from build/agent-lab-v0 with repository root, npm run build, and dist. Cloudflare GitHub check reports successful deployment for e201776."
+    immutable_preview_url: https://c4d1195e.the-world-changed-lab.pages.dev/
+    deployment_id: c4d1195e-79c7-4e00-8478-c464330d5701
+    reason: "Separate Cloudflare Pages project the-world-changed-lab successfully redeployed polish-1 commit 6d376fe from build/agent-lab-v0."
     production_rule: "production stays on build/comprehension-v0 until explicit promotion"
     production_unchanged: VERIFIED
     preview_builds:
       c8ffbc8e0d5903d3cf3746237fcbd62f09711390: FAILED
       98267ffc05f8bd47c1d22a2de8d064aaba96757d: FAILED
-    public_content_smoke: PENDING_INDEPENDENT_FETCH
-    next_action: "Open the public Lab preview in a normal browser and complete a quick smoke test of front door -> ENTER THE LAB -> WORLD / CHANGE IT / REPLAY / LIVE; then prepare the Lab human-test protocol."
+    public_content_smoke: VERIFIED_FROM_USER_WALKTHROUGH
+    next_action: "Prepare and run the Lab human-test protocol; do not continue product expansion until human evidence identifies a concrete failure."
 
 comprehension_pass_1:
   branch: build/comprehension-v0
