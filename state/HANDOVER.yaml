@@ -30,5 +30,7 @@ known_blockers:
   - human evidence: none yet for the hero or the Lab
 
 next_gate:
-  - PREVIEW_READY: verify a Cloudflare branch preview of build/agent-lab-v0 without touching production
+  - PREVIEW_READY: verify the Cloudflare branch preview of build/agent-lab-v0 (expected alias
+    https://build-agent-lab-v0.the-world-changed.pages.dev/, unconfirmed — this build env cannot reach *.pages.dev)
+    and confirm production still serves build/comprehension-v0
   - HUMAN_TEST_READY: write a Lab test protocol (after the hero's comprehension gate is scored)

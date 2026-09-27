@@ -124,6 +124,12 @@ product_expansion_v0:
   production_stimulus_changed: false
   spec: product/PRODUCT-EXPANSION-V0.md
   evidence: evidence/screenshots/agent-lab-v0/
+  cloudflare_preview:
+    status: NOT_VERIFIED
+    pushed_commit: c8ffbc8e0d5903d3cf3746237fcbd62f09711390
+    expected_branch_alias: "https://build-agent-lab-v0.the-world-changed.pages.dev/ (Cloudflare's usual branch alias; unconfirmed)"
+    reason: "the build environment's network policy blocks *.pages.dev, so neither the preview nor production could be fetched from here"
+    production_rule: "production stays on build/comprehension-v0 until explicit promotion"
 
 comprehension_pass_1:
   branch: build/comprehension-v0
