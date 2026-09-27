@@ -3,19 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "THE WORLD CHANGED \u2014 deterministic authority-expiry kernel + PULL THE GAP hero",
+  "description": "Interactive AI-agent lab for testing what happens when the world changes between observation and action.",
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "receipts": "vite-node proof/generate-receipts.ts",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "verify:visual": "python3 tools/visual_check.py",
-    "verify:mode": "python3 tools/mode_check.py",
+    "receipts": "vite-node proof/generate-receipts.ts",
     "test:isolation": "vitest run live/test/isolation.test.ts",
-    "live": "npm run test:isolation && npm run test:claude-code && vite-node live/run-live.ts --",
     "test:claude-code": "vitest run live/test/claude-code.test.ts",
+    "live": "npm run test:isolation && npm run test:claude-code && vite-node live/run-live.ts --",
     "live:api": "npm run test:isolation && vite-node live/run-live-api.ts --"
   },
   "devDependencies": {
@@ -28,6 +26,8 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "0.3.283",
     "@anthropic-ai/sdk": "^0.128.0",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource/schoolbell": "5.3.0",
     "zod": "4.6.5"
   }
 }

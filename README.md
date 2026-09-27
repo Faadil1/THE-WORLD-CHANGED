@@ -1,132 +1,188 @@
+<p align="center">
+  <img src="./assets/hero.jpg" alt="THE WORLD CHANGED — NOT ANYMORE" width="100%" />
+</p>
+
 # THE WORLD CHANGED
 
-> A live AI agent sees the world correctly. You change the world before it acts.
+> **The agent saw the truth. Then you changed the world.**
 
-**30 Days of Real Business Problems — Day XX**
+An interactive AI-agent lab about what happens when the world changes **after an agent observes it but before it acts**.
 
-THE WORLD CHANGED is an interactive experiment about the gap between an AI agent's observation of the world and the state of the world when its action reaches commit time.
+**[Live demo](https://the-world-changed-lab.pages.dev/)** · **TypeScript + Vite** · **Deterministic sandbox** · **Recorded Claude Opus 5.5 specimen**
 
-This project does **not** claim that stale state, TOCTOU, revalidation, fault injection, or agent replay are new problems. The novelty target is the interaction and experience:
+<p align="center">
+  <img src="./assets/loop.gif" alt="THE WORLD CHANGED interaction loop" width="760" />
+</p>
 
-**live agent + user world manipulation + physical observation→action gap + belief/reality misregistration + reproducible proof**
+## The problem
 
-## Core interaction
+An agent can observe something that is genuinely true and still make the wrong move later.
 
-### PULL THE GAP
+The failure lives in the interval between:
 
+**what the agent saw** → **what the world became** → **what the agent did**
+
+THE WORLD CHANGED turns that invisible interval into a physical interaction.
+
+## The core interaction
+
+The canonical experiment starts with a valid access pass.
+
+1. The agent observes **ACCESS GRANTED**.
+2. You **PULL THE GAP** between LOOK and ACT.
+3. You insert **ADMIN REVOKES ACCESS**.
+4. The old observed pass separates visually from the current world.
+5. You compare the same world with and without **CHECK AGAIN**.
+6. Replay reconstructs the run from observable receipts.
+
+The initial observation was not wrong. **The world changed afterwards.**
+
+## Explore the Lab
+
+The product expands the same mechanism into four surfaces:
+
+- **WORLD** — run Access, Calendar, or Document scenarios.
+- **CHANGE IT** — race to change the world before the agent reaches ACT.
+- **REPLAY** — scrub through what the agent saw, what changed, and what happened next.
+- **LIVE** — inspect a genuine recorded Claude Opus 5.5 sandbox run.
+
+<p align="center">
+  <img src="./assets/lab.jpg" alt="THE WORLD CHANGED Lab overview" width="100%" />
+</p>
+
+### Three worlds
+
+| World | Change | Outcome being tested |
+| --- | --- | --- |
+| Access | permission is revoked | act on stale authority vs re-check |
+| Calendar | a slot is booked | confirm stale availability vs refresh |
+| Document | a newer version appears | send stale content vs refresh |
+
+**Access** uses the canonical deterministic kernel. **Calendar** and **Document** are clearly labeled sandbox simulations.
+
+## Genuine agent specimen
+
+The repository includes a **public redacted copy** of one genuine Claude Opus 5.5 run against the isolated sandbox.
+
+Observed sequence:
+
+`observe_access` → `prepare_export` → **WORLD CHANGED** → `verify_access` → **STOP**
+
+The model re-read the world after revocation, observed **REVOKED**, and did not commit the export.
+
+<p align="center">
+  <img src="./assets/proof.jpg" alt="Recorded genuine Claude Opus 5.5 run" width="100%" />
+</p>
+
+The hosted site replays this recorded specimen. It does **not** pretend the replay is live execution.
+
+## Architecture
+
+```text
+visitor interaction
+      │
+      ▼
+experience/           visual state + Lab + Replay
+      │
+      ▼
+simulation/           deterministic world kernel
+      │
+      ├── receipts ──────────────► replay
+      │
+      ▼
+live/                 isolated Claude Agent SDK runner
+      │
+      ▼
+4 sandbox tools only
 ```
-OBSERVE ●────────────● ACT
-          ↑        ↑
-        PULL THIS OPEN
+
+The browser build contains no agent credentials. The optional live runner uses the operator's local Claude Code authentication and sandbox-only tools.
+
+More detail: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+
+## Proof boundaries
+
+This submission distinguishes three things explicitly:
+
+- **Deterministic proof** — reproducible kernel runs and receipts.
+- **Product simulations** — Calendar and Document demonstrate the interaction model; they are not real-model claims.
+- **Recorded genuine run** — one Claude Opus 5.5 execution preserved as a redacted public receipt.
+
+No private chain-of-thought is recorded or displayed. Only observable world state, tool calls, state changes, verification, attempts and outcomes are used as evidence.
+
+See [docs/PROOF.md](./docs/PROOF.md).
+
+## Tech stack
+
+- TypeScript
+- Vite
+- Vitest
+- Claude Agent SDK
+- MCP-style sandbox tools
+- CSS / SVG / Web Animations
+- Cloudflare Pages
+
+## Run locally
+
+Requirements: Node.js 20+.
+
+```bash
+npm ci
+npm test
+npm run typecheck
+npm run dev
 ```
 
-The visitor becomes the changing world.
+Production build:
 
-1. The agent observes a valid state.
-2. The visitor physically opens the interval between observation and action.
-3. The visitor injects a real world-state change.
-4. BELIEF and REALITY fall out of registration.
-5. The interval snaps shut and the action reaches commit time.
-6. A commit-time verification can refresh state and prevent an invalid effect.
-
-## Hero experiment
-
-### AUTHORITY EXPIRED
-
-Initial observation:
-
-```
-ACCESS = GRANTED
-WORLD VERSION = N
+```bash
+npm run build
+npm run preview
 ```
 
-The agent prepares an export.
+Optional local genuine-agent run:
 
-The visitor opens THE GAP and injects:
-
-```
-ADMIN REVOKES ACCESS
-WORLD VERSION = N + 1
+```bash
+npm run live -- twc-live-0001
 ```
 
-The original observation is now stale.
+That command requires an authenticated local Claude Code session. No credential is stored in this repository.
 
-The experience compares:
+## Judge / reviewer path
 
-- an unguarded action using the stale witness;
-- a guarded action that re-verifies current authority at commit time.
+For a fast review:
 
-## Semantic rule
+1. Open the [live demo](https://the-world-changed-lab.pages.dev/).
+2. Complete the Access experiment with **CHECK AGAIN**.
+3. Enter the Lab and try another world.
+4. Open **CHANGE IT**.
+5. Open **REPLAY**.
+6. Finish on **LIVE** to inspect the recorded Opus specimen.
 
-**BELIEF does not mean private chain-of-thought.**
+A 60–90 second walkthrough is in [docs/DEMO.md](./docs/DEMO.md).
 
-In this project, BELIEF means:
+## Repository map
 
-> the latest relevant world state actually observed by the agent.
+```text
+experience/   product UI, interaction, replay, scenarios
+simulation/   deterministic kernel and tests
+live/         isolated agent runner and tests
+proof/        receipt schema + deterministic receipt generation
+evidence/     deterministic receipts + redacted public live specimen
+assets/       curated submission visuals
+docs/         architecture, proof, demo
+```
 
-Only observable artifacts may be represented as evidence:
+## Safety & privacy
 
-- world state;
-- world version;
-- observations;
-- tool calls;
-- state mutations;
-- verification;
-- action attempts;
-- state diffs;
-- outcomes.
+- sandbox effects only;
+- no destructive external actions;
+- no private chain-of-thought;
+- no API keys or credentials committed;
+- public agent receipt is redacted for submission;
+- no internal research notes, personal workflow notes, human-test templates, or handover/state files are included in the submission tree.
 
-## Visual law
+---
 
-When BELIEF = REALITY, both layers are perfectly registered and appear as one.
-
-When BELIEF != REALITY, the layers physically separate and misregister.
-
-Motion must have a causal job:
-
-- gap width = elapsed vulnerability window;
-- plate separation = disagreement;
-- misregistration = stale state;
-- snap-to-register = successful refresh;
-- commit impact = attempted external effect.
-
-## Build order
-
-1. Deterministic simulation kernel
-2. Automated tests
-3. PULL THE GAP interaction
-4. Authority-expiry hero scenario
-5. Deterministic rewind/replay + run receipt
-6. Visual refinement
-7. Real Claude Opus 5.5 execution against mock tools
-8. Additional experiments only after the hero passes
-
-## Hard exclusions
-
-Do not drift into:
-
-- agent dashboards;
-- trace waterfalls;
-- generic node graphs;
-- isometric agent offices;
-- decorative 3D worlds;
-- fake model outcomes presented as real;
-- private chain-of-thought visualization.
-
-## Proof standard
-
-The public experience has two modes:
-
-**EXPERIENCE MODE** — deterministic and replayable.
-
-**LIVE PROOF MODE** — real model executions against sandboxed mock services only.
-
-If outcome rates are shown, they must be calculated from actual runs. No invented percentages.
-
-## Status
-
-Concept: **LOCKED**
-
-Current phase: **TECHNICAL REALITY CHECK**
-
-See `state/CURRENT.yaml` for canonical execution state.
+**THE WORLD CHANGED**  
+*It was true. Not anymore.*

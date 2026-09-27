@@ -1,0 +1,40 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Submission hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for path in research state product tools CLAUDE.md; do
+            if [ -e "$path" ]; then
+              echo "Internal-only path found: $path"
+              exit 1
+            fi
+          done
+
+          # Regexes are intentionally written so the workflow does not match itself.
+          personal_pattern='Faadil[[:space:]]Boussari|boussarifaadil@ya[h]oo\.com|bfaadil@gma[i]l\.com|claude\.ai/code/sess[i]on_'
+          if git grep -I -n -E "$personal_pattern" -- . ':!.github/workflows/ci.yml'; then
+            echo "Personal or internal session data found in submission tree."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
