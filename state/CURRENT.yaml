@@ -108,7 +108,7 @@ visual_pass_2:
 
 product_expansion_v0:
   gate: PRODUCT_EXPANSION_V0
-  state: MACHINE_VALIDATED
+  state: PREVIEW_READY
   branch: build/agent-lab-v0
   base: "build/comprehension-v0 @ dab18784a7f171dad01f919d8961568e3a9d4700"
   north_star: "THE WORLD CHANGED is an interactive lab where you change reality after an AI agent has observed it — then see whether the agent notices before it acts."
@@ -125,16 +125,20 @@ product_expansion_v0:
   spec: product/PRODUCT-EXPANSION-V0.md
   evidence: evidence/screenshots/agent-lab-v0/
   cloudflare_preview:
-    status: BLOCKED_BUILD_CONFIG
-    pushed_commit: c8ffbc8e0d5903d3cf3746237fcbd62f09711390
-    expected_branch_alias: null
-    reason: "Cloudflare automatic preview builds for c8ffbc8 and 98267ff failed before deploy; dashboard reports root directory not found / build environment setup failure. No functional preview URL exists."
+    status: DEPLOYED_SUCCESS
+    pushed_commit: e2017768252648b9d1935693d96f1992f3a724c2
+    project: the-world-changed-lab
+    url: https://the-world-changed-lab.pages.dev/
+    immutable_preview_url: https://92ba6b22.the-world-changed-lab.pages.dev/
+    deployment_id: 92ba6b22-8a5d-44ff-8276-fffad6950ada
+    reason: "Separate Cloudflare Pages project created from build/agent-lab-v0 with repository root, npm run build, and dist. Cloudflare GitHub check reports successful deployment for e201776."
     production_rule: "production stays on build/comprehension-v0 until explicit promotion"
     production_unchanged: VERIFIED
     preview_builds:
       c8ffbc8e0d5903d3cf3746237fcbd62f09711390: FAILED
       98267ffc05f8bd47c1d22a2de8d064aaba96757d: FAILED
-    next_action: "Create an isolated Cloudflare project for agent-lab-v0 or correct preview root-directory configuration without changing production."
+    public_content_smoke: PENDING_INDEPENDENT_FETCH
+    next_action: "Open the public Lab preview in a normal browser and complete a quick smoke test of front door -> ENTER THE LAB -> WORLD / CHANGE IT / REPLAY / LIVE; then prepare the Lab human-test protocol."
 
 comprehension_pass_1:
   branch: build/comprehension-v0
