@@ -16,6 +16,20 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Submission hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in research state product tools CLAUDE.md; do
+            if [ -e "$path" ]; then
+              echo "Internal-only path found: $path"
+              exit 1
+            fi
+          done
+          if git grep -I -n -E '(Faadil Boussari|boussarifaadil@yahoo\.com|bfaadil@gmail\.com|claude\.ai/code/session_)' -- .; then
+            echo "Personal or internal session data found in submission tree."
+            exit 1
+          fi
       - run: npm ci
       - run: npm test
       - run: npm run typecheck
