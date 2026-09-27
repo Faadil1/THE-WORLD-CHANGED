@@ -20,13 +20,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           for path in research state product tools CLAUDE.md; do
             if [ -e "$path" ]; then
               echo "Internal-only path found: $path"
               exit 1
             fi
           done
-          if git grep -I -n -E '(Faadil Boussari|boussarifaadil@yahoo\.com|bfaadil@gmail\.com|claude\.ai/code/session_)' -- .; then
+
+          # Regexes are intentionally written so the workflow does not match itself.
+          personal_pattern='Faadil[[:space:]]Boussari|boussarifaadil@ya[h]oo\.com|bfaadil@gma[i]l\.com|claude\.ai/code/sess[i]on_'
+          if git grep -I -n -E "$personal_pattern" -- . ':!.github/workflows/ci.yml'; then
             echo "Personal or internal session data found in submission tree."
             exit 1
           fi
