@@ -7,6 +7,10 @@ THE WORLD CHANGED is an interactive lab where you change reality after an AI age
 **Live Lab:** https://the-world-changed-lab.pages.dev/  
 **Front-door experiment:** https://the-world-changed.pages.dev/
 
+![NOT ANYMORE. The agent's old pass (cyan) lifts out of register over the current one: REVOKED.](evidence/packaging/final-v0/readme/twc-readme-hero.jpg)
+
+<p align="center"><img src="evidence/packaging/final-v0/readme/twc-readme-loop.gif" width="640" alt="15-second silent loop: IT WAS TRUE, pull the gap, admin revokes access, NOT ANYMORE, check again, STOPPED, THE WORLD CHANGED."></p>
+
 ---
 
 ## The idea
@@ -58,6 +62,8 @@ the current world is re-read and the action stops.
 ## Enter the Lab
 
 After the front-door experiment, the product expands into five connected layers.
+
+![The Lab: WORLD, CHANGE IT, REPLAY, LIVE](evidence/packaging/final-v0/readme/twc-readme-lab.jpg)
 
 ### WORLD
 
@@ -125,6 +131,8 @@ They are not presented as real-model evidence.
 One Claude Opus 5.5 run was executed against the sandbox through the isolated TWC tool set and preserved as a receipt.
 
 The public site replays that run. It does not pretend replay is live execution.
+
+![SPECIMEN 001: REAL AGENT RUN. CLAUDE OPUS 5.5. RECORDED GENUINE RUN, NOT RUNNING NOW. RE-VERIFIED, STOPPED BEFORE COMMIT.](evidence/packaging/final-v0/readme/twc-readme-proof.jpg)
 
 ### No chain-of-thought
 
@@ -224,3 +232,7 @@ Technical evidence lives under:
 - `evidence/agent-lab-v0/`
 
 The public experience keeps proof secondary. The interaction comes first.
+
+- Case study: `product/FINAL-CASE-STUDY.md`
+- Proof appendix (every public claim → file): `product/PROOF-APPENDIX.md`
+- Packaging assets (covers, 15 s cut, trailer, screenshots): `evidence/packaging/final-v0/`

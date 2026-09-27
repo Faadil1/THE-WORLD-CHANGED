@@ -1,0 +1,173 @@
+{
+  "trailer-16x9": {
+    "file": "twc-trailer-16x9.mp4",
+    "size": [
+      1920,
+      1080
+    ],
+    "fps": 30,
+    "duration_s": 40.0,
+    "crf": 25,
+    "audio": null,
+    "shots": [
+      {
+        "t": 0.0,
+        "shot": "hook: THE AGENT SAW THE TRUTH."
+      },
+      {
+        "t": 1.5,
+        "shot": "hero: IT WAS TRUE."
+      },
+      {
+        "t": 3.0,
+        "shot": "hook: THEN YOU CHANGED THE WORLD."
+      },
+      {
+        "t": 4.3,
+        "shot": "access: PULL THE GAP"
+      },
+      {
+        "t": 6.3,
+        "shot": "access: ADMIN REVOKES ACCESS / NOT ANYMORE."
+      },
+      {
+        "t": 8.1,
+        "shot": "access: old pass vs current world"
+      },
+      {
+        "t": 9.9,
+        "shot": "access: CHECK AGAIN / STOPPED"
+      },
+      {
+        "t": 12.5,
+        "shot": "door: ENTER THE LAB"
+      },
+      {
+        "t": 14.8,
+        "shot": "lab: PICK A WORLD."
+      },
+      {
+        "t": 16.2,
+        "shot": "calendar: IT WAS FREE."
+      },
+      {
+        "t": 17.2,
+        "shot": "calendar: SOMEONE ELSE BOOKS IT / NOT ANYMORE."
+      },
+      {
+        "t": 19.0,
+        "shot": "calendar: CHECK AGAIN / STOPPED"
+      },
+      {
+        "t": 20.6,
+        "shot": "challenge: CAN YOU CHANGE THE WORLD BEFORE IT ACTS?"
+      },
+      {
+        "t": 21.8,
+        "shot": "challenge: CHANGE IT NOW"
+      },
+      {
+        "t": 23.7,
+        "shot": "challenge: IN TIME / STOPPED"
+      },
+      {
+        "t": 25.6,
+        "shot": "replay: REPLAY WHAT THE AGENT SAW."
+      },
+      {
+        "t": 27.1,
+        "shot": "replay: saw -> became -> did"
+      },
+      {
+        "t": 31.0,
+        "shot": "live: REAL AGENT RUN. CLAUDE OPUS 5.5 · RECORDED · NOT RUNNING NOW"
+      },
+      {
+        "t": 33.8,
+        "shot": "live: observe -> prepare -> WORLD CHANGED -> verify -> STOP"
+      },
+      {
+        "t": 37.0,
+        "shot": "end: THE WORLD CHANGED."
+      }
+    ]
+  },
+  "cut15-16x9": {
+    "file": "twc-cut-15s-16x9.mp4",
+    "size": [
+      1920,
+      1080
+    ],
+    "fps": 30,
+    "duration_s": 15.0,
+    "crf": 22,
+    "audio": null,
+    "shots": [
+      {
+        "t": 0.0,
+        "shot": "0-3 IT WAS TRUE."
+      },
+      {
+        "t": 3.0,
+        "shot": "3-6 PULL THE GAP"
+      },
+      {
+        "t": 6.0,
+        "shot": "6-8 ADMIN REVOKES ACCESS / NOT ANYMORE."
+      },
+      {
+        "t": 8.0,
+        "shot": "8-11 old observation separates"
+      },
+      {
+        "t": 11.0,
+        "shot": "11-14 CHECK AGAIN / STOPPED"
+      },
+      {
+        "t": 14.0,
+        "shot": "14-15 THE WORLD CHANGED."
+      }
+    ]
+  },
+  "cut15-4x5": {
+    "file": "twc-cut-15s-4x5.mp4",
+    "size": [
+      1080,
+      1350
+    ],
+    "fps": 30,
+    "duration_s": 15.0,
+    "crf": 22,
+    "audio": null,
+    "shots": [
+      {
+        "t": 0.0,
+        "shot": "0-3 IT WAS TRUE."
+      },
+      {
+        "t": 3.0,
+        "shot": "3-6 PULL THE GAP"
+      },
+      {
+        "t": 6.0,
+        "shot": "6-6.8 ADMIN REVOKES ACCESS"
+      },
+      {
+        "t": 6.8,
+        "shot": "6.8-8 NOT ANYMORE."
+      },
+      {
+        "t": 8.0,
+        "shot": "8-11 old observation vs current world"
+      },
+      {
+        "t": 11.0,
+        "shot": "11-14 CHECK AGAIN / STOPPED"
+      },
+      {
+        "t": 14.0,
+        "shot": "14-15 THE WORLD CHANGED."
+      }
+    ]
+  }
+}

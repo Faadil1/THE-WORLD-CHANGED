@@ -1,0 +1,1 @@
+Interactive lab: change reality after an AI agent has observed it, then see whether it checks again before acting. Deterministic kernel, replayable receipts, one recorded Claude Opus 5.5 run.
