@@ -27,10 +27,9 @@ proof_status:
 
 known_blockers:
   - public live execution: no secure executor on a static build (see product/LIVE-AGENT-LAB.md)
+  - agent-lab preview: Cloudflare automatic builds for c8ffbc8 and 98267ff both failed before deployment (root directory / build-environment setup); no preview URL exists yet
   - human evidence: none yet for the hero or the Lab
 
 next_gate:
-  - PREVIEW_READY: verify the Cloudflare branch preview of build/agent-lab-v0 (expected alias
-    https://build-agent-lab-v0.the-world-changed.pages.dev/, unconfirmed — this build env cannot reach *.pages.dev)
-    and confirm production still serves build/comprehension-v0
+  - PREVIEW_READY: production is confirmed to remain on build/comprehension-v0. Create a separate Cloudflare preview project for build/agent-lab-v0 (repository root, npm run build, dist) or repair preview build config without modifying production; then verify the public Lab.
   - HUMAN_TEST_READY: write a Lab test protocol (after the hero's comprehension gate is scored)
