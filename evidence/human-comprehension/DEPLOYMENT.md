@@ -1,7 +1,7 @@
 # HUMAN COMPREHENSION DEPLOYMENT
 
 **Status:** DEPLOYED — PUBLIC PREVIEW
-**Date:** 2026-09-26
+**Date:** 2026-09-27
 
 ## Deployment
 
@@ -9,10 +9,12 @@
 - Project: `the-world-changed`
 - Repository: `Faadil1/THE-WORLD-CHANGED`
 - Branch: `build/comprehension-v0`
-- Deployed commit: `ea8a2672c17a9e2ba8f5067f4ccf483f2a343dbb`
+- Deployed commit: `dbcd1b99b9ad4a546498c14d45181195d46bf1e3`
 - Build command: `npm run build`
 - Output directory: `dist`
 - Public URL: https://the-world-changed.pages.dev/
+- Verified deployment URL: https://75f48b0b.the-world-changed.pages.dev/
+- Deployment ID: `75f48b0b-e954-42d4-b637-819df194c968`
 
 ## Pre-deploy validation
 
@@ -21,6 +23,10 @@ Cloudflare deployment was performed only after the branch's existing validation 
 - `npm test`: 145/145
 - `npm run typecheck`: pass
 - `npm run build`: pass
+
+## Visual pass 2 deployment verification
+
+Cloudflare production was re-verified after the ACCESS PASS / REALITY TEAR rebuild. The active deployment points to commit `dbcd1b99b9ad4a546498c14d45181195d46bf1e3` and reports successful Production status.
 
 ## Public deployment verification
 
@@ -38,7 +44,7 @@ Verified against the public `pages.dev` URL:
 
 ## Verification caveats
 
-A second targeted browser run was started to verify the complete guarded resolution and a mobile-sized public viewport.
+Earlier, a targeted browser run was started to verify the complete guarded resolution and a mobile-sized public viewport.
 
 That automation failed inside the browser-automation service while attempting the final pull-pin step. This is **not evidence of an application failure**.
 
