@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <main class="bench" id="bench" data-phase="CLOSED" data-policy="UNGUARDED" data-misregistered="false">
-      <header class="masthead">
+    <main class="bench" id="bench" data-phase="CLOSED" data-policy="UNGUARDED" data-misregistered="false" data-headline="true">
+      <header class="topline">
         <h1 class="title">THE WORLD CHANGED</h1>
         <p class="mode" aria-live="polite">
           <span class="mode__chip" id="mode-label"></span>
@@ -16,104 +16,137 @@
         </p>
       </header>
 
-      <!-- Causal register: each step lights only when kernel state reaches it. -->
-      <ol class="sequence" id="sequence" aria-label="What happened, in order">
-        <li data-step="observed"><i aria-hidden="true"></i><span>OBSERVED CORRECTLY</span></li>
-        <li data-step="changed"><i aria-hidden="true"></i><span>WORLD CHANGED</span></li>
-        <li data-step="stale"><i aria-hidden="true"></i><span>OBSERVATION STALE</span></li>
-        <li data-step="outcome"><i aria-hidden="true"></i><span id="step-outcome">ACTS</span></li>
-      </ol>
+      <section class="stage">
+        <!-- The headline is the state, set in huge type: IT WAS TRUE. -> NOT ANYMORE. -> THE WORLD CHANGED. -->
+        <h2 class="headline" id="headline" aria-live="polite">
+          <span class="headline__ghost" id="headline-ghost" aria-hidden="true">IT WAS TRUE.</span>
+          <span class="headline__text" id="headline-text">IT WAS TRUE.</span>
+        </h2>
 
-      <!-- BELIEF / REALITY print plates. Registered = one surface. -->
-      <section class="plates" aria-label="Belief and reality">
-        <div class="plate plate--reality" id="plate-reality">
-          <span class="mark mark--tl"></span><span class="mark mark--tr"></span>
-          <span class="mark mark--bl"></span><span class="mark mark--br"></span>
-          <span class="plate__field">ACCESS</span>
-          <span class="plate__value" id="reality-access">GRANTED</span>
-          <span class="plate__tag plate__tag--reality">REALITY · world now <b>v<span id="reality-version">1</span></b><em class="flag flag--changed">CHANGED</em></span>
-        </div>
-        <div class="plate plate--belief" id="plate-belief" aria-hidden="true">
-          <span class="mark mark--tl"></span><span class="mark mark--tr"></span>
-          <span class="mark mark--bl"></span><span class="mark mark--br"></span>
-          <span class="plate__field">ACCESS</span>
-          <span class="plate__value" id="belief-access">GRANTED</span>
-          <span class="plate__tag plate__tag--belief">BELIEF · <span id="belief-verb">agent saw</span> <b>v<span id="belief-version">1</span></b><em class="flag flag--stale">STALE</em></span>
-        </div>
-        <p class="sr-only" id="plates-sr" aria-live="polite"></p>
-      </section>
+        <!-- THE ACCESS PASS. Two print layers: what the agent saw (cyan ghost) and what is true now. -->
+        <section class="passes" aria-label="The access pass: what the agent saw and what is true now">
+          <span class="lanyard" aria-hidden="true"><span>THE WORLD CHANGED · THE WORLD CHANGED · THE WORLD CHANGED · THE WORLD CHANGED ·</span></span>
 
-      <p class="pending" id="pending"></p>
+          <article class="pass pass--reality" id="plate-reality">
+            <span class="pass__hole" aria-hidden="true"></span>
+            <header class="pass__band"><span>ACCESS PASS</span><span>CUSTOMER DATA</span></header>
+            <div class="pass__id" aria-hidden="true">
+              <span class="glyph"><i class="glyph__sun"></i><i class="glyph__arc"></i><i class="glyph__block"></i></span>
+              <span class="pass__meta"><b>HOLDER</b> AGENT<br /><b>TASK</b> EXPORT</span>
+            </div>
+            <span class="pass__field">ACCESS</span>
+            <span class="pass__value" id="reality-access">GRANTED</span>
+            <span class="pass__valid" aria-hidden="true">VALID</span>
+            <span class="pass__tag pass__tag--reality">WORLD NOW · <b>v<span id="reality-version">1</span></b><em class="flag flag--changed">CHANGED</em></span>
+            <footer class="pass__stub" aria-hidden="true"><span class="barcode"></span><span class="pass__small">REALITY</span></footer>
+          </article>
 
-      <!-- THE GAP -->
-      <section class="gapline" id="gapline">
-        <div class="node node--observe">
-          <span class="node__dot"></span>
-          <span class="node__label">OBSERVE</span>
-          <span class="node__tick">t0</span>
-        </div>
-        <div
-          class="interval"
-          id="interval"
-          role="slider"
-          tabindex="0"
-          aria-label="The gap between observation and action. Arrow keys widen or narrow."
-          aria-valuemin="2"
-          aria-valuemax="24"
-          aria-valuenow="2"
-        >
-          <div class="interval__rail"></div>
-          <div class="interval__ticks" id="ticks"></div>
-          <div class="interval__hint" id="hint">PULL THE GAP →</div>
-          <div class="interval__ghost" id="ghost"></div>
-          <div class="interval__event" id="placed"><span>ADMIN REVOKES ACCESS</span></div>
-          <div class="interval__playhead" id="playhead"></div>
-        </div>
-        <div class="actwrap">
-          <button class="node node--act" id="act" aria-label="Act handle — drag to pull the gap open">
+          <article class="pass pass--belief" id="plate-belief" aria-hidden="true">
+            <span class="pass__hole"></span>
+            <header class="pass__band"><span>ACCESS PASS</span><span>CUSTOMER DATA</span></header>
+            <div class="pass__id">
+              <span class="glyph"><i class="glyph__sun"></i><i class="glyph__arc"></i><i class="glyph__block"></i></span>
+              <span class="pass__meta"><b>HOLDER</b> AGENT<br /><b>TASK</b> EXPORT</span>
+            </div>
+            <span class="pass__field">ACCESS</span>
+            <span class="pass__value" id="belief-access">GRANTED</span>
+            <span class="pass__valid">VALID</span>
+            <span class="pass__tag pass__tag--belief"><span id="belief-verb">AGENT SAW</span> · <b>v<span id="belief-version">1</span></b><em class="flag flag--stale">OLD</em></span>
+            <footer class="pass__stub"><span class="barcode"></span><span class="pass__small">BELIEF</span></footer>
+          </article>
+
+          <!-- World change: a cancellation sticker slams onto the current pass. -->
+          <span class="cancel" aria-hidden="true"><b>NO LONGER</b><b>VALID</b></span>
+          <!-- Commit-time check: a scanner reads the current pass. -->
+          <span class="scanner" aria-hidden="true"></span>
+          <!-- Outcome mark stamped onto the pass (text set from kernel state). -->
+          <span class="passmark" id="passmark" aria-hidden="true"></span>
+
+          <span class="note note--saw" aria-hidden="true">agent saw this</span>
+          <p class="sr-only" id="plates-sr" aria-live="polite"></p>
+        </section>
+
+        <!-- The story so far, as ticket punches lit by kernel state. -->
+        <ol class="sequence" id="sequence" aria-label="What happened, in order">
+          <li data-step="observed"><i aria-hidden="true"></i><span>AGENT SAW IT</span></li>
+          <li data-step="changed"><i aria-hidden="true"></i><span>WORLD CHANGED</span></li>
+          <li data-step="stale"><i aria-hidden="true"></i><span>PASS IS OLD</span></li>
+          <li data-step="outcome"><i aria-hidden="true"></i><span id="step-outcome">ACTS</span></li>
+        </ol>
+
+        <!-- THE GAP: a perforated ticket between LOOK and ACT. Pull it open. -->
+        <section class="gapline" id="gapline">
+          <div class="node node--observe">
             <span class="node__dot"></span>
-            <span class="node__label">ACT</span>
-            <span class="node__tick" id="act-tick">t3</span>
+            <span class="node__label">LOOK</span>
+            <span class="node__tick">t0</span>
+          </div>
+          <div
+            class="interval"
+            id="interval"
+            role="slider"
+            tabindex="0"
+            aria-label="The gap between looking and acting. Arrow keys widen or narrow."
+            aria-valuemin="2"
+            aria-valuemax="24"
+            aria-valuenow="2"
+          >
+            <div class="interval__rail"></div>
+            <div class="interval__ticks" id="ticks"></div>
+            <div class="interval__hint" id="hint">PULL THE GAP →</div>
+            <div class="interval__ghost" id="ghost"></div>
+            <div class="interval__event" id="placed"><span>ADMIN REVOKES ACCESS</span><em class="note note--changed" aria-hidden="true">world changed here</em></div>
+            <div class="interval__playhead" id="playhead"></div>
+          </div>
+          <div class="actwrap">
+            <button class="node node--act" id="act" aria-label="Act handle — drag to pull the gap open">
+              <span class="node__dot"></span>
+              <span class="node__label">ACT</span>
+              <span class="node__tick" id="act-tick">t3</span>
+            </button>
+            <span class="pawl" aria-hidden="true"></span>
+            <button class="latch" id="latch" aria-label="Release the gap: pull the pin">
+              <span class="latch__stem" aria-hidden="true"></span>
+              <span class="latch__ring" aria-hidden="true"></span>
+              <span class="latch__label" aria-hidden="true">PULL</span>
+            </button>
+            <span class="effect" id="effect" aria-hidden="true"><b>EXPORT SENT</b><i>SIMULATED</i></span>
+          </div>
+        </section>
+
+        <section class="controls">
+          <button class="token" id="token" aria-describedby="token-help">
+            <span class="token__grip" aria-hidden="true">⋮⋮</span> ADMIN REVOKES ACCESS
           </button>
-          <span class="pawl" aria-hidden="true"></span>
-          <button class="latch" id="latch" aria-label="Release the gap: pull the pin">
-            <span class="latch__stem" aria-hidden="true"></span>
-            <span class="latch__ring" aria-hidden="true"></span>
-            <span class="latch__label" aria-hidden="true">PULL PIN</span>
+          <span class="sr-only" id="token-help">Enter to pick up, arrow keys to position inside the gap, Enter to drop.</span>
+
+          <button class="switch" id="guard" role="switch" aria-checked="false">
+            <span class="switch__gate" aria-hidden="true"><i></i></span>
+            <span class="switch__label">CHECK AGAIN<small>CHECK AT COMMIT</small></span>
+            <span class="switch__track"><span class="switch__knob"></span></span>
+            <span class="switch__state" id="guard-state">OFF</span>
+            <em class="note note--check" aria-hidden="true">check again</em>
           </button>
-          <span class="effect" id="effect" aria-hidden="true"><b>EXPORT</b><i>SIMULATED</i></span>
-        </div>
-      </section>
+        </section>
 
-      <section class="controls">
-        <button class="token" id="token" aria-describedby="token-help">
-          <span class="token__grip" aria-hidden="true">⋮⋮</span> ADMIN REVOKES ACCESS
-        </button>
-        <span class="sr-only" id="token-help">Enter to pick up, arrow keys to position inside the gap, Enter to drop.</span>
-
-        <button class="switch" id="guard" role="switch" aria-checked="false">
-          <span class="switch__label">CHECK AT COMMIT</span>
-          <span class="switch__track"><span class="switch__knob"></span></span>
-          <span class="switch__state" id="guard-state">OFF</span>
-        </button>
-
-      </section>
-
-      <section class="verdict" id="verdict" aria-live="assertive">
-        <div class="verdict__stamp" id="stamp"></div>
-        <p class="verdict__why"><span id="why"></span> <span class="sim" id="sim">SIMULATED · SANDBOX</span></p>
-        <table class="sameworld" id="sameworld" hidden>
-          <caption>SAME WORLD</caption>
-          <tbody id="sameworld-rows"></tbody>
-        </table>
-        <div class="verdict__actions">
-          <button class="link" id="replay-other"></button>
-          <button class="link" id="reset">RESET</button>
-        </div>
+        <section class="verdict" id="verdict" aria-live="assertive">
+          <div class="verdict__stamp" id="stamp"></div>
+          <p class="verdict__sub" id="stamp-sub"></p>
+          <p class="verdict__why"><span id="why"></span> <span class="sim" id="sim">SIMULATED · SANDBOX</span></p>
+          <p class="pending" id="pending"></p>
+          <table class="sameworld" id="sameworld" hidden>
+            <caption>SAME WORLD, TWICE</caption>
+            <tbody id="sameworld-rows"></tbody>
+          </table>
+          <div class="verdict__actions">
+            <button class="link" id="replay-other"></button>
+            <button class="link" id="reset">RESET</button>
+          </div>
+        </section>
       </section>
 
       <details class="proof" id="proof">
-        <summary>PROOF <span class="proof__hint">tool calls · world versions · receipt</span></summary>
+        <summary>PROOF <span class="proof__hint">belief · reality · tool calls · world versions · receipt</span></summary>
         <p class="proof__transport" id="transport" hidden></p>
         <p class="proof__transport" id="raw-outcome" hidden></p>
         <ol class="ledger" id="ledger" aria-label="Observable event ledger"></ol>

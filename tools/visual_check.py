@@ -24,6 +24,7 @@ CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
 
 def center(page, sel):
+    page.locator(sel).scroll_into_view_if_needed()  # a real visitor scrolls to what they grab
     b = page.locator(sel).bounding_box()
     return b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
 

@@ -1,27 +1,29 @@
 # 15-SECOND SILENT STORYBOARD — THE WORLD CHANGED
 
-**Status:** STORYBOARDED + MACHINE-VALIDATED (not yet human-validated)
+**Status:** VISUAL PASS 2: STORYBOARDED + MACHINE-VALIDATED (not yet human-validated)
 **Source:** the existing hero, driven by real pointer gestures — `tools/storyboard.py`
 **Mode shown:** `DETERMINISTIC SANDBOX · SCRIPTED AGENT — NOT A LIVE MODEL` (visible in every frame, including the end card)
 **Sound:** none
 
-Evidence: `evidence/storyboard/comprehension-v0/` — `clip-15s.mp4` + one frame per beat for
+Evidence: `evidence/storyboard/visual-pass-2/` (pass 1: `evidence/storyboard/comprehension-v0/`) — `clip-15s.mp4` + one frame per beat for
 `desktop` (1080×1350, 4:5), `mobile` (390×844) and `desktop-reduced-motion`; contact sheets; `storyboard.json`
 with the DOM/kernel assertions checked at each beat.
 
 | Time | Beat | On screen (all kernel-driven) | Motion's job |
 |---|---|---|---|
-| 0–3s | Correct observation | BELIEF and REALITY in register: one `GRANTED` surface. `BELIEF · agent saw v1` / `REALITY · world now v1`. Register step 1 `OBSERVED CORRECTLY` lit. `CHECK AT COMMIT ON`. | none (still) |
-| 3–6s | Pull the gap | ACT handle dragged right; the interval stretches under tension; pull-pin appears. Plates **stay registered**. | gap width = time in which the world *could* change |
-| 6–8s | Revoke access | `ADMIN REVOKES ACCESS` dragged into the gap and dropped. REALITY becomes `REVOKED`, world v2. | event placement = when the world changed |
-| 8–11s | Divergence | Plates split: hollow cyan `GRANTED` (BELIEF, flagged **STALE**) over solid magenta `REVOKED` (REALITY, flagged **CHANGED**). Steps 2–3 `WORLD CHANGED → OBSERVATION STALE` lit. | plate separation = disagreement caused by the mutation |
-| 11–14s | Verify and stop | Pin pulled; the interval snaps to ACT; commit-time re-check snaps BELIEF back into register (`agent re-checked v2`); ACT becomes a square stop mark; stamp `BLOCKED`; step 4 `RE-CHECKED → STOPPED`; SAME WORLD rows: `CHECK OFF → EXPORTED ON STALE ACCESS · SIMULATED` / `CHECK ON → STOPPED · NO EFFECT · THIS RUN`. | snap-to-register = successful refresh; stop mark = blocked irreversible effect |
-| 14–15s | THE WORLD CHANGED | End card: misregistered title (cyan contour over magenta), registration marks, mode chip. Storyboard-only overlay, not part of the product. | none |
+| 0–3s | IT WAS TRUE. | Huge cobalt headline **IT WAS TRUE.**; the access pass hangs from its lanyard: ACCESS **GRANTED**, lime **VALID** sticker, `WORLD NOW · v1`; *agent saw this*. CHECK AGAIN is on. | none |
+| 3–6s | Pull the gap | ACT stub dragged right; the perforated ticket tears open, thins and shows its fibres; PULL tab drops. The pass does **not** change. | tension = time in which the world could change |
+| 6–8s | NOT ANYMORE. | Coral **ADMIN REVOKES ACCESS** sticker dropped into the tear (*world changed here*); **NO LONGER VALID** slams onto the pass; band turns magenta; headline **NOT ANYMORE.** | slam = the world changed |
+| 8–11s | Old observation | Cyan ghost pass lifted out of register over the magenta one: `AGENT SAW · v1 · OLD` / GRANTED vs `WORLD NOW · v2 · CHANGED` / REVOKED. Punch row: **PASS IS OLD**. | offset = the agent's pass is now old |
+| 11–14s | Check again, stop | PULL tab; lime scanner reads the current pass; ghost snaps into register; violet **STOPPED** stamp; ACT hole turns square; headline **THE WORLD CHANGED.**; verdict **RE-CHECKED · STOPPED**; SAME WORLD, TWICE rows. | scan = the check reads now; snap = refreshed; stamp = no effect |
+| 14–15s | THE WORLD CHANGED. | Full-frame misprinted title (cyan contour over magenta) + mode chip. Storyboard-only overlay. | none |
+
+On the phone variant the "camera" scrolls between the pass and the ticket (the pass is the hero; the ticket is below it).
 
 ## What a silent viewer should be able to say
 
-> It saw GRANTED. Someone revoked access while it was waiting. What it saw went stale.
-> Because it re-checked, it stopped — without the check it would have exported anyway.
+> It had a valid pass. While it waited, the pass was cancelled. It was still holding the old one.
+> It checked again, saw it was revoked, and stopped. Without the check it would have used the old pass.
 
 ## Rules held
 

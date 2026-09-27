@@ -1,0 +1,73 @@
+{
+  "desktop-initial": {
+    "misregistered": "false",
+    "headline": "true",
+    "headline_text": "IT WAS TRUE."
+  },
+  "desktop-gap-open": {
+    "phase": "OPEN",
+    "misregistered": "false",
+    "headline": "true",
+    "headline_text": "IT WAS TRUE."
+  },
+  "desktop-world-changed": {
+    "changed": "true",
+    "headline": "notanymore",
+    "headline_text": "NOT ANYMORE."
+  },
+  "desktop-stale": {
+    "misregistered": "true",
+    "stale": "true",
+    "headline": "notanymore",
+    "headline_text": "NOT ANYMORE."
+  },
+  "desktop-guarded-outcome": {
+    "outcome": "BLOCKED",
+    "stopped": "true",
+    "effect": "false",
+    "headline": "changed",
+    "headline_text": "THE WORLD CHANGED."
+  },
+  "desktop-unguarded-outcome": {
+    "outcome": "UNAUTHORIZED_COMMIT",
+    "effect": "true",
+    "misregistered": "true",
+    "headline": "changed",
+    "headline_text": "THE WORLD CHANGED."
+  },
+  "mobile-initial": {
+    "misregistered": "false",
+    "headline": "true",
+    "headline_text": "IT WAS TRUE."
+  },
+  "mobile-world-changed": {
+    "changed": "true",
+    "headline": "notanymore",
+    "headline_text": "NOT ANYMORE."
+  },
+  "mobile-guarded-outcome": {
+    "outcome": "BLOCKED",
+    "stopped": "true",
+    "effect": "false",
+    "headline": "changed",
+    "headline_text": "THE WORLD CHANGED."
+  },
+  "reduced-motion-initial": {
+    "misregistered": "false",
+    "headline": "true",
+    "headline_text": "IT WAS TRUE."
+  },
+  "reduced-motion-stale": {
+    "misregistered": "true",
+    "stale": "true",
+    "headline": "notanymore",
+    "headline_text": "NOT ANYMORE."
+  },
+  "reduced-motion-guarded-outcome": {
+    "outcome": "BLOCKED",
+    "stopped": "true",
+    "effect": "false",
+    "headline": "changed",
+    "headline_text": "THE WORLD CHANGED."
+  }
+}

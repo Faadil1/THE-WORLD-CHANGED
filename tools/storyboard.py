@@ -1,13 +1,16 @@
 """
-15-second silent storyboard, driven through the REAL hero (deterministic sandbox, CHECK AT COMMIT on).
+15-second silent storyboard, driven through the REAL hero (deterministic sandbox, CHECK AGAIN on).
+Visual pass 2: "ACCESS PASS / REALITY TEAR".
 
 Beats (seconds):
-  0-3   correct observation      BELIEF and REALITY in register, step 1 lit
-  3-6   pull the gap             gap opens; plates stay registered (pulling alone changes nothing)
-  6-8   revoke access            ADMIN REVOKES ACCESS dropped into the gap
-  8-11  divergence               plates misregister; BELIEF flagged STALE, REALITY flagged CHANGED
-  11-14 verify and stop          pin pulled; commit-time re-check re-registers; BLOCKED; same-world rows
-  14-15 THE WORLD CHANGED        end card (storyboard-only overlay; mode label stays visible)
+  0-3   IT WAS TRUE.             huge VALID access pass, headline IT WAS TRUE.
+  3-6   pull the gap             the perforated ticket is torn open; the pass does not change
+  6-8   NOT ANYMORE.             ADMIN REVOKES ACCESS dropped in; NO LONGER VALID slams onto the pass
+  8-11  old observation          cyan ghost pass (GRANTED v1, OLD) vs magenta current pass (REVOKED v2)
+  11-14 check again, stop        pull tab; scanner reads the current pass; ghost snaps back; STOPPED
+  14-15 THE WORLD CHANGED.       full-frame end card (storyboard-only overlay; mode label stays visible)
+
+On short (phone) viewports the "camera" scrolls between the pass and the ticket.
 
 For every variant it records video, trims it to exactly 15 s, captures one frame per beat and
 asserts the DOM reflects kernel state at each beat. Sound is never used.
@@ -26,7 +29,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 URL = "http://localhost:4173/?seed=twc-hero-0001"
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "evidence/storyboard/comprehension-v0")
+OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "evidence/storyboard/visual-pass-2")
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 DET = "DETERMINISTIC SANDBOX · SCRIPTED AGENT — NOT A LIVE MODEL"
 
@@ -37,11 +40,11 @@ VARIANTS = [
 ]
 
 BEATS = [
-    (0.0, 3.0, "correct-observation"),
+    (0.0, 3.0, "it-was-true"),
     (3.0, 6.0, "pull-gap"),
-    (6.0, 8.0, "revoke-access"),
-    (8.0, 11.0, "divergence"),
-    (11.0, 14.0, "verify-and-stop"),
+    (6.0, 8.0, "not-anymore"),
+    (8.0, 11.0, "old-observation"),
+    (11.0, 14.0, "check-again-stopped"),
     (14.0, 15.0, "the-world-changed"),
 ]
 
@@ -50,21 +53,18 @@ END_CARD = """
   const d = document.createElement('div');
   d.id = 'storyboard-endcard';
   d.innerHTML = `
-    <div class="sb-mark sb-tl"></div><div class="sb-mark sb-tr"></div>
-    <div class="sb-mark sb-bl"></div><div class="sb-mark sb-br"></div>
-    <div class="sb-title"><span class="sb-c">THE WORLD CHANGED</span><span class="sb-m">THE WORLD CHANGED</span></div>
+    <div class="sb-title"><span class="sb-c">THE WORLD CHANGED.</span><span class="sb-m">THE WORLD CHANGED.</span></div>
     <div class="sb-chip">__DET__</div>`;
   const s = document.createElement('style');
   s.textContent = `
-    #storyboard-endcard { position: fixed; inset: 0; z-index: 99; background: var(--paper);
-      display: grid; place-items: center; align-content: center; gap: 28px; }
-    .sb-title { position: relative; font: 800 clamp(26px, 7vw, 76px)/1 var(--sans); letter-spacing: 0.08em; text-align: center; padding: 0 16px; }
-    .sb-title span { display: block; mix-blend-mode: multiply; }
-    .sb-c { color: transparent; -webkit-text-stroke: 1.5px var(--cyan); transform: translate(-6px, -5px); position: absolute; inset: 0; }
+    #storyboard-endcard { position: fixed; inset: 0; z-index: 99; background: var(--paper) var(--grain);
+      display: grid; align-content: center; gap: 28px; padding: 0 4vw; overflow: hidden; }
+    .sb-title { position: relative; font-family: var(--display); font-weight: 800; font-stretch: 75%;
+      font-size: 19vw; line-height: 0.8; letter-spacing: -0.035em; }
+    .sb-title span { display: block; }
+    .sb-c { position: absolute; inset: 0; color: transparent; -webkit-text-stroke: 2px var(--cyan); transform: translate(-0.05em, -0.06em); mix-blend-mode: multiply; }
     .sb-m { color: var(--magenta); }
-    .sb-chip { font: 700 11px var(--mono); letter-spacing: 0.08em; border: 1px solid var(--ink); padding: 3px 7px; max-width: calc(100vw - 32px); text-align: center; }
-    .sb-mark { position: absolute; width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 50%; }
-    .sb-tl { left: 24px; top: 24px; } .sb-tr { right: 24px; top: 24px; } .sb-bl { left: 24px; bottom: 24px; } .sb-br { right: 24px; bottom: 24px; }`;
+    .sb-chip { justify-self: start; font: 700 11px var(--mono); letter-spacing: 0.06em; border: 1.5px solid var(--ink); background: var(--paper); padding: 3px 7px; max-width: calc(100vw - 32px); }`;
   document.head.appendChild(s);
   document.body.appendChild(d);
 })();
@@ -100,6 +100,7 @@ def run_variant(p, v):
     page.goto(URL)
     page.wait_for_selector("#mode-label")
     page.click("#guard")  # pre-roll: CHECK AT COMMIT on; visible from frame 0
+    page.evaluate("window.scrollTo(0, 0)")
     page.mouse.move(-10, -10)
     page.wait_for_timeout(600)
     t0 = time.monotonic()
@@ -108,23 +109,38 @@ def run_variant(p, v):
     checks = {}
     frames = {}
 
+    short = v["viewport"]["height"] < 1000
+
+    def show(sel, block="center"):
+        """Camera move on short viewports only (desktop poster keeps everything in frame)."""
+        if short:
+            page.evaluate(f"document.querySelector('{sel}').scrollIntoView({{block: '{block}'}})")
+            time.sleep(0.12)
+
+    def headline():
+        return page.inner_text("#headline-text")
+
     def frame(label, s):
         wait_until(s)
-        path = out / f"{int(s * 10):03d}-{label}.png"
-        page.screenshot(path=str(path))
+        path = out / f"{int(s * 10):03d}-{label}.jpg"  # grain texture makes PNG frames ~0.8 MB each
+        page.screenshot(path=str(path), type="jpeg", quality=86)
         frames[label] = path.name
 
     # 0-3 correct observation
-    frame("correct-observation", 1.5)
-    checks["correct-observation"] = {
+    frame("it-was-true", 1.5)
+    checks["it-was-true"] = {
+        "headline": headline(),
         "misregistered": data(page, "misregistered"),
         "steps": step_states(page),
         "mode_label": page.inner_text("#mode-label"),
     }
-    assert checks["correct-observation"]["misregistered"] == "false"
+    assert checks["it-was-true"]["headline"] == "IT WAS TRUE."
+    assert checks["it-was-true"]["misregistered"] == "false"
     assert step_states(page)[0][1] == "current"
 
     # 3-6 pull the gap (smooth drag of the ACT handle)
+    wait_until(3.0)
+    show("#gapline")
     wait_until(3.2)
     x, y = center(page, "#act")
     dx = v["viewport"]["width"] * (0.5 if v["viewport"]["width"] < 600 else 0.42)
@@ -136,38 +152,47 @@ def run_variant(p, v):
         time.sleep(1.6 / n)
     page.mouse.up()
     frame("pull-gap", 5.4)
-    checks["pull-gap"] = {"phase": data(page, "phase"), "misregistered": data(page, "misregistered")}
+    checks["pull-gap"] = {"phase": data(page, "phase"), "misregistered": data(page, "misregistered"), "headline": headline()}
+    assert checks["pull-gap"]["headline"] == "IT WAS TRUE."
     assert checks["pull-gap"]["phase"] == "OPEN"
     assert checks["pull-gap"]["misregistered"] == "false", "pulling alone must not misregister"
 
     # 6-8 revoke access (drag the world event into the gap)
-    wait_until(6.1)
+    wait_until(6.0)
     tx, ty = center(page, "#token")
     ib = page.locator("#interval").bounding_box()
     gx, gy = ib["x"] + ib["width"] * 0.55, ib["y"] + ib["height"] / 2
     page.mouse.move(tx, ty)
     page.mouse.down()
-    for i in range(1, n + 1):
-        page.mouse.move(tx + (gx - tx) * i / n, ty + (gy - ty) * i / n)
-        time.sleep(0.9 / n)
+    for i in range(1, 13):  # few steps: the drop must land early in its beat
+        page.mouse.move(tx + (gx - tx) * i / 12, ty + (gy - ty) * i / 12)
+        time.sleep(0.03)
     page.mouse.up()
-    frame("revoke-access", 7.4)
+    show(".topline", "start")
+    frame("not-anymore", 7.8)
+    assert headline() == "NOT ANYMORE."
 
-    # 8-11 divergence
-    frame("divergence", 9.5)
-    checks["divergence"] = {
+    # 8-11 old observation vs current world
+    frame("old-observation", 9.5)
+    checks["old-observation"] = {
+        "headline": headline(),
         "misregistered": data(page, "misregistered"),
         "stale": data(page, "stale"),
         "changed": data(page, "changed"),
         "steps": step_states(page),
-        "belief": page.inner_text(".plate__tag--belief"),
-        "reality": page.inner_text(".plate__tag--reality"),
+        "belief": page.inner_text(".pass__tag--belief"),
+        "reality": page.inner_text(".pass__tag--reality"),
+        "belief_access": page.inner_text("#belief-access"),
+        "reality_access": page.inner_text("#reality-access"),
     }
-    assert checks["divergence"]["misregistered"] == "true"
-    assert checks["divergence"]["stale"] == "true" and checks["divergence"]["changed"] == "true"
-    assert [s[1] for s in checks["divergence"]["steps"]] == ["reached", "reached", "current", "pending"]
+    c = checks["old-observation"]
+    assert c["misregistered"] == "true" and c["stale"] == "true" and c["changed"] == "true"
+    assert c["belief_access"] == "GRANTED" and c["reality_access"] == "REVOKED"
+    assert [s[1] for s in c["steps"]] == ["reached", "reached", "current", "pending"]
 
-    # 11-14 verify and stop (pull the pin)
+    # 11-14 check again and stop (pull the tab)
+    wait_until(10.9)
+    show("#gapline")
     wait_until(11.1)
     lx, ly = center(page, "#latch")
     page.mouse.move(lx, ly)
@@ -176,19 +201,23 @@ def run_variant(p, v):
         page.mouse.move(lx, ly + 5 * i)
         time.sleep(0.02)
     page.mouse.up()
+    time.sleep(0.25)
+    show(".passes")
     page.wait_for_function("document.getElementById('bench').dataset.phase === 'RESOLVED'", timeout=4000)
-    if v["viewport"]["height"] < 1000:
-        page.evaluate("document.getElementById('verdict').scrollIntoView({block: 'center'})")
-    frame("verify-and-stop", 13.5)
-    checks["verify-and-stop"] = {
+    frame("check-again-stopped", 13.5)
+    checks["check-again-stopped"] = {
+        "headline": headline(),
+        "passmark": page.inner_text("#passmark"),
         "outcome": data(page, "outcome"),
         "stopped": data(page, "stopped"),
         "stamp": page.inner_text("#stamp"),
         "steps": step_states(page),
         "same_world": page.eval_on_selector_all("#sameworld-rows tr", "rs => rs.map(r => r.innerText.replace(/\\s+/g, ' ').trim())"),
     }
-    assert checks["verify-and-stop"]["outcome"] == "BLOCKED" and checks["verify-and-stop"]["stopped"] == "true"
-    assert checks["verify-and-stop"]["steps"][3][2] == "RE-CHECKED → STOPPED"
+    c = checks["check-again-stopped"]
+    assert c["outcome"] == "BLOCKED" and c["stopped"] == "true"
+    assert c["stamp"] == "RE-CHECKED · STOPPED" and c["passmark"] == "STOPPED"
+    assert c["steps"][3][2] == "CHECKED AGAIN → STOPPED"
 
     # 14-15 end card
     wait_until(14.0)

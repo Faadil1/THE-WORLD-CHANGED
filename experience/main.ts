@@ -3,6 +3,8 @@
  * Reads HeroController snapshots (which come from the kernel) and draws them.
  * It never decides outcomes; it only converts gestures into kernel inputs via the controller.
  */
+import "@fontsource-variable/bricolage-grotesque/standard.css";
+import "@fontsource/schoolbell/index.css";
 import { HeroController, MAX_GAP_TICKS, PREPARE_TICK, type HeroSnapshot } from "./controller";
 import {
   belief,
@@ -96,7 +98,7 @@ function draw(s: HeroSnapshot): void {
   $("belief-access").textContent = b?.accessState ?? "—";
   $("belief-version").textContent = String(b?.witnessedWorldVersion ?? "—");
   const bt = beliefTag(w);
-  $("belief-verb").textContent = bt.rechecked ? "agent re-checked" : "agent saw";
+  $("belief-verb").textContent = bt.rechecked ? "CHECKED AGAIN" : "AGENT SAW";
   bench.dataset.stale = String(bt.stale);
   bench.dataset.rechecked = String(bt.rechecked);
   bench.dataset.changed = String(w.eventLog.some((e) => e.type === "ADMIN_REVOKES_ACCESS"));
@@ -110,10 +112,10 @@ function draw(s: HeroSnapshot): void {
   // Pending action line
   const p = w.pendingAction;
   const eff = w.committedEffects.at(-1);
-  const status = eff ? (eff.authorized ? "committed · simulated" : "committed without authority · simulated") : p?.status === "RESOLVED" ? "blocked" : p?.status.toLowerCase();
-  $("pending").innerHTML = p
-    ? `EXPORT · <b>${fmt(p.recordCount)}</b> records · relies on observation <b>v${p.witnessWorldVersion}</b> · ${status}`
-    : "";
+  // Plain words above the fold; witness/version detail lives in PROOF.
+  const status = eff ? (eff.authorized ? "sent · simulated" : "sent on the old pass · simulated") : p?.status === "RESOLVED" ? "stopped · nothing sent" : p?.status === "INELIGIBLE" ? "not sent" : "waiting";
+  $("pending").innerHTML = p ? `EXPORT · <b>${fmt(p.recordCount)}</b> customer records · ${status}` : "";
+  renderHeadline(w, s.phase === "RESOLVED");
 
   // Gap geometry
   const commitTick = s.commitTick;
@@ -161,14 +163,18 @@ function draw(s: HeroSnapshot): void {
   const a = w.actionAttempts.at(-1);
   if (receiptReady && a) {
     const effect = w.committedEffects.find((e) => e.id === a.effectId);
-    $("stamp").textContent = a.result.replace("_", " ");
+    // Primary words for people; the kernel's own result name stays visible as a secondary label.
+    $("stamp").textContent =
+      a.result === "UNAUTHORIZED_COMMIT" ? "OUTDATED PASS USED" : a.result === "BLOCKED" ? "RE-CHECKED · STOPPED" : "STILL VALID · SENT";
+    $("stamp-sub").textContent = `sandbox result: ${a.result}${a.witnessStale ? " · stale authority" : ""}`;
     $("sim").hidden = !effect;
     $("why").textContent =
       a.result === "UNAUTHORIZED_COMMIT"
-        ? `Exported ${fmt(effect!.recordCount)} records on access observed at v${a.witnessWorldVersion}. At commit, access was ${a.currentAccessState} (v${a.currentWorldVersion}). Nothing re-checked.`
+        ? `It acted on the pass it saw earlier. Access had already been revoked. The export went out anyway.`
         : a.result === "BLOCKED"
-          ? `Re-checked at commit: ${a.currentAccessState} at v${a.witnessWorldVersion}. Export blocked — no effect.`
-          : `Nothing changed in the gap. Export committed with current access (v${a.witnessWorldVersion}).`;
+          ? `It checked again, saw REVOKED, and stopped. Nothing was sent.`
+          : `Nothing changed while it waited. The pass was still valid.`;
+    $("passmark").textContent = a.result === "UNAUTHORIZED_COMMIT" ? "OUTDATED PASS USED" : a.result === "BLOCKED" ? "STOPPED" : "SENT";
     replayOther.textContent = s.policy === "GUARDED" ? "↻ SAME WORLD · CHECK OFF" : "↻ SAME WORLD · CHECK ON";
     renderSameWorld(s);
     const blob = new Blob([JSON.stringify(ctl.receipt(), null, 2)], { type: "application/json" });
@@ -177,9 +183,24 @@ function draw(s: HeroSnapshot): void {
     receiptLink.download = `receipt.${s.policy.toLowerCase()}.${SEED}.json`;
   }
   bench.dataset.effect = String(w.committedEffects.length > 0);
-  if (!receiptReady) $("sameworld").hidden = true;
+  if (!receiptReady) {
+    $("sameworld").hidden = true;
+    $("passmark").textContent = "";
+  }
 
   renderLedger(w);
+}
+
+/** The headline IS the state: IT WAS TRUE. -> NOT ANYMORE. -> THE WORLD CHANGED. (from kernel state). */
+function renderHeadline(w: WorldState, resolved: boolean): void {
+  const changed = w.eventLog.some((e) => e.type === "ADMIN_REVOKES_ACCESS");
+  const key = changed ? (resolved ? "changed" : "notanymore") : resolved ? "still" : "true";
+  const text = { true: "IT WAS TRUE.", notanymore: "NOT ANYMORE.", changed: "THE WORLD CHANGED.", still: "STILL TRUE." }[key];
+  if (bench.dataset.headline !== key) {
+    bench.dataset.headline = key;
+    $("headline-text").textContent = text;
+    $("headline-ghost").textContent = text;
+  }
 }
 
 /** Nudge a centred label so it never leaves its container (short gaps, narrow screens). */
@@ -192,12 +213,20 @@ function keepInside(el: HTMLElement, box: HTMLElement): void {
   el.style.marginLeft = `${shift}px`;
 }
 
+/** Plain words for the outcome punch (labels themselves come from kernel state via causal.ts). */
+const STEP_WORDS: Record<string, string> = {
+  [OUTCOME_LABELS.pending]: "ACTS",
+  [OUTCOME_LABELS.stopped]: "CHECKED AGAIN → STOPPED",
+  [OUTCOME_LABELS.staleCommit]: "USED THE OLD PASS",
+  [OUTCOME_LABELS.committed]: "STILL VALID → SENT",
+};
+
 function renderSequence(w: WorldState, resolved: boolean): void {
   const steps = causalSteps(w, resolved);
   for (const st of steps) {
     const li = $("sequence").querySelector<HTMLElement>(`[data-step="${st.key}"]`)!;
     li.dataset.state = st.state;
-    if (st.key === "outcome") $("step-outcome").textContent = st.label;
+    if (st.key === "outcome") $("step-outcome").textContent = STEP_WORDS[st.label] ?? st.label;
   }
   bench.dataset.outcomeStep = steps[3]!.label;
   bench.dataset.stopped = String(steps[3]!.label === OUTCOME_LABELS.stopped);
@@ -386,12 +415,17 @@ async function doRelease(): Promise<void> {
   await nextFrame();
   bench.dataset.sweep = "go"; // interval closes: time runs out toward commit
   await wait(540);
+  if (ctl.snapshot().policy === "GUARDED") {
+    bench.dataset.scan = "go"; // the check reads the CURRENT pass before anything is sent
+    await wait(460);
+  }
   for (;;) {
     const ev = ctl.step();
     if (!ev) break;
     if (ev.type === "VERIFY_ACCESS") await wait(720); // let the belief plate re-register visibly
     if (ev.type === "COMMIT_EXPORT") bench.dataset.impact = "true";
   }
+  bench.dataset.scan = "";
   releasing = false;
 }
 // ---------- LATCH: pull the pin to release the tensioned gap ----------
@@ -499,17 +533,18 @@ function renderLive(id: ModeIdentity): void {
   const bh = r.behavior;
   // Primary label comes from observable behavior; the raw classifier outcome stays in PROOF.
   $("stamp").textContent = liveBehaviorLabel(r);
+  $("stamp-sub").textContent = "recorded live run · raw receipt outcome in PROOF";
+  $("passmark").textContent = bench.dataset.stopped === "true" ? "STOPPED" : "";
   bench.dataset.liveLabel = liveBehaviorLabel(r);
   const raw = $("raw-outcome");
   raw.textContent = `RAW RECEIPT OUTCOME · ${r.outcome} · ${r.outcome_basis}${r.requires_human_review ? " · flagged for human review" : ""}`;
   raw.hidden = false;
   $("sim").hidden = r.final_state.committed_effects.length === 0;
   $("why").textContent =
-    `Saw ${bh.first_observation?.access ?? "—"} (v${bh.first_observation?.world_version ?? "—"}) and prepared the export. ` +
-    `The world changed (v${bh.revocation_world_version ?? "—"}). ` +
+    `It saw ${bh.first_observation?.access ?? "—"} and got the export ready. Then access was revoked. ` +
     (bh.reverified_after_mutation
-      ? `It re-checked on its own${bh.observed_revocation ? ", saw REVOKED" : ""}${bh.commit_attempted ? "" : ", and did not commit"}.`
-      : "It did not re-check.");
+      ? `It checked again on its own${bh.observed_revocation ? ", saw REVOKED" : ""}${bh.commit_attempted ? "" : ", and did not send it"}.`
+      : "It did not check again.");
   const blob = new Blob([JSON.stringify(r, null, 2)], { type: "application/json" });
   receiptLink.href = URL.createObjectURL(blob);
   receiptLink.download = `live-receipt.${r.seed}.json`;

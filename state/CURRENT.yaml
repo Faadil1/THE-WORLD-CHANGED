@@ -28,7 +28,7 @@ gates:
   deterministic_replay: PROVEN
   reproducible_receipts: PROVEN_DETERMINISTIC
   interaction_prototype: PROVEN_FUNCTIONAL
-  human_comprehension: ACTIVE_PUBLIC_TEST_READY
+  human_comprehension: VISUAL_PASS_2_READY_FOR_HUMAN_TEST
   sandbox_tool_isolation: PROVEN
   live_mode_distinction: PROVEN
   live_receipt_pipeline: PROVEN_PREP
@@ -94,6 +94,17 @@ public_preview:
   admin_revoke_public: VERIFIED
   mobile_public_check: NOT_INDEPENDENTLY_VERIFIED
   guarded_terminal_public_check: INCONCLUSIVE_AUTOMATION_SERVICE_FAILURE
+
+visual_pass_2:
+  branch: build/comprehension-v0
+  direction: "ACCESS PASS / REALITY TEAR"
+  spec: product/VISUAL-DIRECTION-PASS-2.md
+  storyboard: product/STORYBOARD-15S.md
+  screenshots: evidence/screenshots/visual-pass-2/
+  storyboard_evidence: evidence/storyboard/visual-pass-2/
+  kernel_changed: false
+  live_receipt_changed: false
+  public_preview_note: "public_preview above records pass-1 commit ea8a267; re-verify and record the new deployed SHA before any participant sees pass 2"
 
 comprehension_pass_1:
   branch: build/comprehension-v0
