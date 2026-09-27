@@ -13,7 +13,8 @@
     "receipts": "vite-node proof/generate-receipts.ts",
     "test:isolation": "vitest run live/test/isolation.test.ts",
     "test:claude-code": "vitest run live/test/claude-code.test.ts",
-    "live": "npm run test:isolation && npm run test:claude-code && vite-node live/run-live.ts --"
+    "live": "npm run test:isolation && npm run test:claude-code && vite-node live/run-live.ts --",
+    "live:api": "npm run test:isolation && vite-node live/run-live-api.ts --"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",
